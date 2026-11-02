@@ -15,6 +15,7 @@ Every problem folder has the same structure:
 <!-- INDEX:START -->
 | # | Problem |
 |---|---|
+| 001 | [Upstream renamed a column and the churn model silently scored garbage for 9 days](problems/001-schema-drift-guard) |
 <!-- INDEX:END -->
 
 ## Run the tests
