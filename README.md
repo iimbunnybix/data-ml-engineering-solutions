@@ -19,6 +19,7 @@ Every problem folder has the same structure:
 | 002 | [Daily revenue dashboard over-reports by 3% and changes after it is published](problems/002-late-events-dedup-aggregation) |
 | 003 | [Fraud model scored near-perfect offline but caught almost nothing after launch](problems/003-point-in-time-feature-join) |
 | 004 | [Payment-risk model started declining good customers after an upstream release, and no alert fired](problems/004-feature-drift-psi-monitor) |
+| 005 | [Re-running a failed backfill inflated September revenue by 60% on the finance dashboard](problems/005-idempotent-backfill-partition-overwrite) |
 <!-- INDEX:END -->
 
 ## Run the tests
