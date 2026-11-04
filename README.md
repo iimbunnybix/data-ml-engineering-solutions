@@ -23,6 +23,7 @@ Every problem folder has the same structure:
 | 006 | [Nightly merchant-enrichment job stuck at 199/200 tasks for hours after onboarding one large marketplace](problems/006-skewed-join-key-salting) |
 | 007 | [Fraud model's live scores disagreed with offline scores for the exact same transactions](problems/007-training-serving-skew-parity) |
 | 008 | [Shipped orders showed as "pending" in the warehouse, and some cancelled orders came back](problems/008-cdc-out-of-order-upserts) |
+| 009 | [The morning revenue dashboard showed sales down 59%, and leadership opened an incident over a half-finished file](problems/009-write-audit-publish-partial-load) |
 <!-- INDEX:END -->
 
 ## Run the tests
