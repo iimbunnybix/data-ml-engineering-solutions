@@ -26,6 +26,7 @@ Every problem folder has the same structure:
 | 009 | [The morning revenue dashboard showed sales down 59%, and leadership opened an incident over a half-finished file](problems/009-write-audit-publish-partial-load) |
 | 010 | [Daily order counts disagreed with the restaurants' totals all summer, and the November hourly chart merged two 1 a.m. hours](problems/010-dst-daily-rollup-timezone) |
 | 011 | [Ticket-escalation model scored 84% in validation, then did no better than a coin flip on new customers](problems/011-entity-leakage-random-split) |
+| 012 | [Revenue by region jumped 15% overnight with no change in orders, and the sales team started celebrating](problems/012-join-fanout-duplicate-dimension) |
 <!-- INDEX:END -->
 
 ## Run the tests
