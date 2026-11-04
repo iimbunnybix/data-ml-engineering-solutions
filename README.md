@@ -21,6 +21,7 @@ Every problem folder has the same structure:
 | 004 | [Payment-risk model started declining good customers after an upstream release, and no alert fired](problems/004-feature-drift-psi-monitor) |
 | 005 | [Re-running a failed backfill inflated September revenue by 60% on the finance dashboard](problems/005-idempotent-backfill-partition-overwrite) |
 | 006 | [Nightly merchant-enrichment job stuck at 199/200 tasks for hours after onboarding one large marketplace](problems/006-skewed-join-key-salting) |
+| 007 | [Fraud model's live scores disagreed with offline scores for the exact same transactions](problems/007-training-serving-skew-parity) |
 <!-- INDEX:END -->
 
 ## Run the tests
