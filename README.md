@@ -20,6 +20,7 @@ Every problem folder has the same structure:
 | 003 | [Fraud model scored near-perfect offline but caught almost nothing after launch](problems/003-point-in-time-feature-join) |
 | 004 | [Payment-risk model started declining good customers after an upstream release, and no alert fired](problems/004-feature-drift-psi-monitor) |
 | 005 | [Re-running a failed backfill inflated September revenue by 60% on the finance dashboard](problems/005-idempotent-backfill-partition-overwrite) |
+| 006 | [Nightly merchant-enrichment job stuck at 199/200 tasks for hours after onboarding one large marketplace](problems/006-skewed-join-key-salting) |
 <!-- INDEX:END -->
 
 ## Run the tests
