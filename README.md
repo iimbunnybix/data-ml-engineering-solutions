@@ -22,6 +22,7 @@ Every problem folder has the same structure:
 | 005 | [Re-running a failed backfill inflated September revenue by 60% on the finance dashboard](problems/005-idempotent-backfill-partition-overwrite) |
 | 006 | [Nightly merchant-enrichment job stuck at 199/200 tasks for hours after onboarding one large marketplace](problems/006-skewed-join-key-salting) |
 | 007 | [Fraud model's live scores disagreed with offline scores for the exact same transactions](problems/007-training-serving-skew-parity) |
+| 008 | [Shipped orders showed as "pending" in the warehouse, and some cancelled orders came back](problems/008-cdc-out-of-order-upserts) |
 <!-- INDEX:END -->
 
 ## Run the tests
