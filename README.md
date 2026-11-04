@@ -25,6 +25,7 @@ Every problem folder has the same structure:
 | 008 | [Shipped orders showed as "pending" in the warehouse, and some cancelled orders came back](problems/008-cdc-out-of-order-upserts) |
 | 009 | [The morning revenue dashboard showed sales down 59%, and leadership opened an incident over a half-finished file](problems/009-write-audit-publish-partial-load) |
 | 010 | [Daily order counts disagreed with the restaurants' totals all summer, and the November hourly chart merged two 1 a.m. hours](problems/010-dst-daily-rollup-timezone) |
+| 011 | [Ticket-escalation model scored 84% in validation, then did no better than a coin flip on new customers](problems/011-entity-leakage-random-split) |
 <!-- INDEX:END -->
 
 ## Run the tests
