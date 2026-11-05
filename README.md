@@ -41,6 +41,7 @@ Every problem folder has the same structure:
 | 024 | [Fraud scores for iOS users jumped to the Android level whenever a serving batch had no Android traffic](problems/024-category-encoding-column-order) |
 | 025 | [Products with commas or line breaks in their description quietly vanished from the catalogue after every nightly import](problems/025-csv-quoted-newlines-row-loss) |
 | 026 | [A fraud model retrained on a "random sample" was great on Asia-Pacific traffic and useless everywhere else](problems/026-head-sample-bias-reservoir-sampling) |
+| 027 | [The revenue dashboard showed 35x more money than the bank received after we launched in India](problems/027-mixed-currency-revenue-fx-conversion) |
 <!-- INDEX:END -->
 
 ## Run the tests
