@@ -24,7 +24,8 @@ a 10,000-order day shows **40.7% of the true revenue**, i.e. "down 59%".
 2. **Audit** the staged data:
    - *row count* within 0.5×–2× the **median** of the last 7 published days
      (median so one earlier bad day does not move the baseline);
-   - *null rate*: `order_id` 0%, `customer_id` ≤ 1% (catches broken joins);
+   - *null rate*: `order_id` 0%, `amount` 0% (a missing amount would crash
+     the revenue query), `customer_id` ≤ 1% (catches broken joins);
    - *uniqueness* of `order_id` (catches a file loaded twice, which a row-count
      check at exactly 2.0× would miss);
    - *range*: no negative amounts.

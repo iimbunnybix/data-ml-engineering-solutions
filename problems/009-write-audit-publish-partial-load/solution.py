@@ -110,6 +110,9 @@ DEFAULT_AUDITS: list[Audit] = [
     row_count_audit(),
     null_rate_audit("order_id", 0.0),
     null_rate_audit("customer_id", 0.01),
+    # Every order needs an amount; range_audit skips None, and one None makes
+    # Warehouse.revenue() raise TypeError on the published day.
+    null_rate_audit("amount", 0.0),
     unique_audit("order_id"),
     range_audit("amount", 0.0),
 ]
