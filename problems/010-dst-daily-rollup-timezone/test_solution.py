@@ -84,6 +84,24 @@ class ZoneAwareRollups(unittest.TestCase):
             s, t = local_day_bounds_utc(local_day(e, NY), NY)
             self.assertTrue(s <= e < t)
 
+    def test_half_hour_offset_zone_gets_24_full_local_hours(self):
+        # Asia/Kolkata is UTC+5:30: UTC hours would cut every bar at :30 local.
+        kolkata = ZoneInfo("Asia/Kolkata")
+        start, end = local_day_bounds_utc(date(2026, 7, 4), kolkata)
+        events = [start + timedelta(minutes=m) for m in range(int((end - start).total_seconds() // 60))]
+        hourly = hourly_counts(events, kolkata)
+        self.assertEqual(len(hourly), 24)
+        self.assertTrue(all(v == 60 for v in hourly.values()))
+        self.assertEqual(list(hourly), local_hours_in_day(date(2026, 7, 4), kolkata))
+        self.assertEqual(hour_label(next(iter(hourly)), kolkata), "2026-07-04 00:00 IST")
+
+    def test_quarter_hour_offset_zone_matches_local_hours(self):
+        kathmandu = ZoneInfo("Asia/Kathmandu")                  # UTC+5:45
+        start, end = local_day_bounds_utc(date(2026, 7, 4), kathmandu)
+        events = [start + timedelta(minutes=m) for m in range(int((end - start).total_seconds() // 60))]
+        self.assertEqual(list(hourly_counts(events, kathmandu)),
+                         local_hours_in_day(date(2026, 7, 4), kathmandu))
+
     def test_naive_timestamps_rejected(self):
         with self.assertRaises(ValueError):
             local_day(datetime(2026, 7, 4, 12), NY)

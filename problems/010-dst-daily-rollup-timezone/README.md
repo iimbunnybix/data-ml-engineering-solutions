@@ -32,8 +32,12 @@ Two time-zone shortcuts:
 - **Convert with the IANA database** (`zoneinfo`): `local_day` uses the
   offset that was in effect *at that instant*. Naive (offset-less) timestamps
   are rejected so local time can never be mistaken for UTC.
-- **Hourly buckets keyed by UTC hour start**, which is unambiguous; the
-  display label includes the zone abbreviation (`01:00 EDT`, `01:00 EST`).
+- **Hourly buckets cut on the local hour, keyed by its UTC start**, which is
+  unambiguous; the display label includes the zone abbreviation (`01:00 EDT`,
+  `01:00 EST`). Cutting on the local hour (not the UTC hour) matters for
+  half-hour-offset zones: in Asia/Kolkata (UTC+5:30) UTC hours would give 25
+  bars per day running 23:30–00:30, the first and last half-empty and mixing
+  two business days; cut locally, it is 24 full bars.
   On 2026-11-01 the chart has 25 buckets of 60 minutes each; on 2026-03-08
   it has 23.
 - **Local-day bounds in UTC** (`local_day_bounds_utc`) give the exact
@@ -49,7 +53,7 @@ Two time-zone shortcuts:
   applied to new dates.
 - A business day that is not a calendar day (e.g. a restaurant "day" ending at
   4 a.m.) needs an explicit cutoff on top of this, defined in local time.
-- Keying by UTC hour is right for storage; charts must still render 23/25-hour
+- Keying by the UTC instant of the bucket start is right for storage; charts must still render 23/25-hour
   days honestly. Comparing "same hour last year" across a transition needs an
   explicit rule.
 - Multi-region businesses should store the zone per entity (restaurant,

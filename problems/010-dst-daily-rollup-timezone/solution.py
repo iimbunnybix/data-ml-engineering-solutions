@@ -6,8 +6,9 @@ America/New_York. The original job converted with a fixed offset
 local wall-clock hour, which merges the two 01:00 hours on the autumn
 "fall back" day.
 
-The fix converts with the IANA time-zone database (``zoneinfo``), keeps
-hourly buckets keyed by their *UTC* start (unambiguous) with a local label
+The fix converts with the IANA time-zone database (``zoneinfo``), cuts
+hourly buckets on local hours, keys them by their *UTC* start (unambiguous,
+even for half-hour-offset zones), gives each a local label
 that includes the offset, and computes which UTC range a local day covers so
 UTC-partitioned tables can be queried correctly.
 """
@@ -75,11 +76,19 @@ def utc_partitions_for_local_day(day: date, tz: ZoneInfo) -> list[date]:
 
 
 def hourly_counts(events: list[datetime], tz: ZoneInfo) -> dict[datetime, int]:
-    """Counts keyed by the UTC start of each hour, so repeated local hours stay separate."""
+    """Counts keyed by the UTC start of each *local* hour.
+
+    The hour is cut in local time, so zones with a half- or quarter-hour
+    offset (India UTC+5:30, Nepal UTC+5:45) get 00:00-01:00 local bars instead
+    of 23:30-00:30 bars that straddle two business days. Converting the bucket
+    start back to UTC keeps the key unambiguous: ``astimezone`` sets ``fold``,
+    so the two 01:00 hours on a "fall back" day stay separate.
+    """
     c: Counter = Counter()
     for e in events:
         _require_aware(e)
-        c[e.astimezone(UTC).replace(minute=0, second=0, microsecond=0)] += 1
+        local_hour_start = e.astimezone(tz).replace(minute=0, second=0, microsecond=0)
+        c[local_hour_start.astimezone(UTC)] += 1
     return dict(sorted(c.items()))
 
 
