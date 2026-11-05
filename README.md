@@ -40,6 +40,7 @@ Every problem folder has the same structure:
 | 023 | [After merging the mobile and partner event feeds, a third of yesterday's events were dated January 1970 and the nightly job crashed on "year 57813"](problems/023-mixed-epoch-units-timestamps) |
 | 024 | [Fraud scores for iOS users jumped to the Android level whenever a serving batch had no Android traffic](problems/024-category-encoding-column-order) |
 | 025 | [Products with commas or line breaks in their description quietly vanished from the catalogue after every nightly import](problems/025-csv-quoted-newlines-row-loss) |
+| 026 | [A fraud model retrained on a "random sample" was great on Asia-Pacific traffic and useless everywhere else](problems/026-head-sample-bias-reservoir-sampling) |
 <!-- INDEX:END -->
 
 ## Run the tests
