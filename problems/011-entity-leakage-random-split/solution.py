@@ -61,8 +61,17 @@ def group_split(rows: Sequence[Row], test_fraction: float, salt: str = "v1") -> 
     return train, test
 
 
-def group_kfold(rows: Sequence[Row], k: int, salt: str = "v1") -> Iterator[Split]:
-    """Yield ``k`` (train, validation) splits with disjoint entities."""
+# The folds use their own salt: with the holdout salt, every training entity
+# has a bucket >= test_fraction, so the low folds would always be empty.
+CV_SALT = "cv-v1"
+
+
+def group_kfold(rows: Sequence[Row], k: int, salt: str = CV_SALT) -> Iterator[Split]:
+    """Yield ``k`` (train, validation) splits with disjoint entities.
+
+    The default salt differs from ``group_split``'s so that folds of the
+    training side are independent of the holdout assignment.
+    """
     if k < 2:
         raise ValueError("k must be at least 2")
     fold_of = lambda r: min(int(_bucket(r.entity, salt) * k), k - 1)
@@ -110,6 +119,9 @@ class NearestNeighbour:
 
 
 def accuracy(model: NearestNeighbour, rows: Sequence[Row]) -> float:
+    """Fraction of rows predicted correctly; an empty set has no accuracy."""
+    if not rows:
+        raise ValueError("cannot compute accuracy on an empty set of rows")
     return sum(model.predict(r.features) == r.label for r in rows) / len(rows)
 
 

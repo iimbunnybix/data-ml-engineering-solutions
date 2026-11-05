@@ -66,6 +66,17 @@ class GroupSplitFix(unittest.TestCase):
         with self.assertRaises(ValueError):
             list(group_kfold(ROWS, 1))
 
+    def test_folds_of_the_training_side_are_never_empty_after_a_holdout(self):
+        train, _ = group_split(ROWS, 0.2)
+        for fold_train, validation in group_kfold(train, 5):
+            self.assertGreater(len(validation), 0)
+            self.assertGreater(len(fold_train), 0)
+
+    def test_accuracy_on_empty_set_raises_clear_error(self):
+        model = NearestNeighbour().fit(ROWS[:5])
+        with self.assertRaises(ValueError):
+            accuracy(model, [])
+
     def test_empty_test_set_report(self):
         rep = leakage_report([Row("a", (0.0,), 1)], [])
         self.assertEqual(rep.test_rows_with_seen_entity, 0.0)

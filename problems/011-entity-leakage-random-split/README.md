@@ -27,7 +27,7 @@ effect with a 1-nearest-neighbour model, which can memorise entities:
 |---|---|---|
 | Random rows (80/20) | 100% | **84%** |
 | By customer (80/20) | 0% | **46%** |
-| By customer, 5-fold | 0% | 44–59% per fold, 50% mean |
+| By customer, 5-fold | 0% | 37–63% per fold, 50% mean |
 
 The 84% is the number the team saw; ~50% is what new customers get.
 
@@ -39,7 +39,9 @@ The 84% is the number the team saw; ~50% is what new customers get.
    Unlike Python's `hash()` it is the same in every process, and an entity
    never switches sides as more data arrives (tested), so metrics are
    comparable between retrains.
-2. **`group_kfold`**: cross-validation folds with disjoint entities.
+2. **`group_kfold`**: cross-validation folds with disjoint entities. It uses its
+   own salt (`cv-v1`), independent of the holdout salt; with a shared salt every
+   training entity would hash above `test_fraction` and the first fold would be empty.
 3. **`assert_no_entity_leakage`**: a guard in the training pipeline that
    fails the run if any entity appears on both sides, and reports what share
    of test rows are affected. Run it before computing any metric.
@@ -51,7 +53,7 @@ weeks) is the honest one, and grouping by customer would understate accuracy.
 
 ## Trade-offs
 - Group splits make metrics noisier, because the effective sample size is
-  the number of entities, not rows (folds above range from 44% to 59%). Use
+  the number of entities, not rows (folds above range from 37% to 63%). Use
   more folds or report confidence intervals.
 - A few huge entities can unbalance the split; check row counts per side or
   stratify buckets by entity size.
