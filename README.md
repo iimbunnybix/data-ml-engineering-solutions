@@ -34,6 +34,7 @@ Every problem folder has the same structure:
 | 017 | [Sales table showed a day's revenue twice after the nightly load job was restarted](problems/017-file-reingestion-double-count) |
 | 018 | [Fraud alerts went from "84% are real" in testing to 19 out of 20 false alarms in production](problems/018-balanced-sample-threshold-precision) |
 | 019 | [Revenue by customer tier was higher than total revenue after a CRM backfill](problems/019-scd2-late-change-overlapping-versions) |
+| 020 | [Dashboard queries on the clickstream table got slower every day although data volume was flat](problems/020-small-files-compaction-planner) |
 <!-- INDEX:END -->
 
 ## Run the tests
