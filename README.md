@@ -43,6 +43,7 @@ Every problem folder has the same structure:
 | 026 | [A fraud model retrained on a "random sample" was great on Asia-Pacific traffic and useless everywhere else](problems/026-head-sample-bias-reservoir-sampling) |
 | 027 | [The revenue dashboard showed 35x more money than the bank received after we launched in India](problems/027-mixed-currency-revenue-fx-conversion) |
 | 028 | [A "9% conversion lift" from a new checkout page vanished after launch because the 50/50 test was really 52/48](problems/028-ab-test-sample-ratio-mismatch) |
+| 029 | [Delivery ETAs were 20 minutes too optimistic all evening while every dashboard stayed green](problems/029-stale-online-features-freshness-ttl) |
 <!-- INDEX:END -->
 
 ## Run the tests
