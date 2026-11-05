@@ -31,6 +31,7 @@ Every problem folder has the same structure:
 | 014 | [The new chargeback model's merchant feature scored 0.77 AUC in validation, and 0.55 in production](problems/014-target-encoding-leakage) |
 | 015 | [The daily revenue report showed 42% of the day's sales, and keyless orders were booked to "Test accounts"](problems/015-null-join-keys-dropped-rows) |
 | 016 | [Every dashboard showed a 50% drop in Tuesday's events, but users and revenue were normal](problems/016-partition-volume-anomaly-check) |
+| 017 | [Sales table showed a day's revenue twice after the nightly load job was restarted](problems/017-file-reingestion-double-count) |
 <!-- INDEX:END -->
 
 ## Run the tests
