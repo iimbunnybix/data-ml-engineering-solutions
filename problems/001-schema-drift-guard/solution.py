@@ -3,8 +3,14 @@ from __future__ import annotations
 
 import csv
 import io
+import math
 from dataclasses import dataclass, field
 from datetime import datetime
+
+
+# Exporters (pandas, Spark) write missing values as these tokens instead of an
+# empty cell, so they must count toward the null rate like an empty cell does.
+NULL_TOKENS = frozenset({"nan", "null", "none", "na", "n/a"})
 
 
 @dataclass
@@ -40,7 +46,12 @@ def _parse(value: str, col: Column):
     if col.dtype == "int":
         return int(value)
     if col.dtype == "float":
-        return float(value)
+        number = float(value)
+        # inf passes float() and NaN never fails a < or > comparison, so
+        # non-finite numbers would slip past the range check.
+        if not math.isfinite(number):
+            raise ValueError(f"non-finite float {value!r}")
+        return number
     if col.dtype == "date":
         return datetime.strptime(value, col.date_format)
     return value
@@ -72,7 +83,7 @@ def validate(rows: list[dict], header: list[str], contract: list[Column]) -> tup
         nulls, bad = 0, []
         for i, r in enumerate(rows):
             raw = (r.get(col.name) or "").strip()
-            if raw == "":
+            if raw == "" or raw.lower() in NULL_TOKENS:
                 nulls += 1
                 clean[i][col.name] = None
                 continue

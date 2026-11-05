@@ -55,6 +55,21 @@ C1,-5,2024-01-15,gold,12
         self.assertTrue(report.ok)
         self.assertIn("unexpected new column 'city'", report.warnings)
 
+    def test_all_nan_column_counts_as_null_and_fails(self):
+        text = """customer_id,monthly_spend,signup_date,plan,tenure_months
+C1,nan,2024-01-15,basic,12
+C2,NaN,2023-06-01,pro,30
+"""
+        with self.assertRaisesRegex(SchemaViolation, "null rate 100%"):
+            load_csv(text, CUSTOMER_CONTRACT)
+
+    def test_infinite_float_is_rejected_as_invalid(self):
+        text = """customer_id,monthly_spend,signup_date,plan,tenure_months
+C1,inf,2024-01-15,basic,12
+"""
+        with self.assertRaisesRegex(SchemaViolation, "'monthly_spend' has 1 invalid"):
+            load_csv(text, CUSTOMER_CONTRACT)
+
 
 if __name__ == "__main__":
     unittest.main()
