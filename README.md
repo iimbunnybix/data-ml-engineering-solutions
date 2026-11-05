@@ -42,6 +42,7 @@ Every problem folder has the same structure:
 | 025 | [Products with commas or line breaks in their description quietly vanished from the catalogue after every nightly import](problems/025-csv-quoted-newlines-row-loss) |
 | 026 | [A fraud model retrained on a "random sample" was great on Asia-Pacific traffic and useless everywhere else](problems/026-head-sample-bias-reservoir-sampling) |
 | 027 | [The revenue dashboard showed 35x more money than the bank received after we launched in India](problems/027-mixed-currency-revenue-fx-conversion) |
+| 028 | [A "9% conversion lift" from a new checkout page vanished after launch because the 50/50 test was really 52/48](problems/028-ab-test-sample-ratio-mismatch) |
 <!-- INDEX:END -->
 
 ## Run the tests
