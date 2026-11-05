@@ -37,6 +37,7 @@ Every problem folder has the same structure:
 | 020 | [Dashboard queries on the clickstream table got slower every day although data volume was flat](problems/020-small-files-compaction-planner) |
 | 021 | [Fraud model recall dropped after every nightly retrain, while offline metrics looked fine](problems/021-label-maturity-training-window) |
 | 022 | [Customer dashboard said the average customer was 43 and earned ₹9.6 lakh; the real numbers were 49 and ₹6.8 lakh](problems/022-sentinel-values-skew-aggregates) |
+| 023 | [After merging the mobile and partner event feeds, a third of yesterday's events were dated January 1970 and the nightly job crashed on "year 57813"](problems/023-mixed-epoch-units-timestamps) |
 <!-- INDEX:END -->
 
 ## Run the tests
