@@ -33,7 +33,10 @@ drift monitoring could not catch it.
    for no history. Refunds are point-in-time too: an order counts as refunded
    only if its `refunded_at` is before `as_of`, so a refund that happens later
    does not leak into training rows or break parity replays of logged serving
-   features. (Orders without `refunded_at` fall back to their stored status.) The
+   features. (Orders without `refunded_at` fall back to their stored status.)
+   An `Order` with a status other than `paid` / `refunded` (e.g. `"PAID"`,
+   `"chargeback"`) raises `ValueError`; otherwise it would silently vanish from
+   the features on both paths and the parity check would still show 0%. The
    offline builder (`build_training_rows`) and the online path
    (`serve_features`) both call it, so the parity test shows 0% mismatch on
    every feature.

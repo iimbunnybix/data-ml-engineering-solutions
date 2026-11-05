@@ -84,6 +84,12 @@ class SharedDefinition(unittest.TestCase):
         self.assertEqual(f["avg_order_value_30d"], 50.0)
         self.assertEqual(f["refund_rate_90d"], 0.5)
 
+    def test_unknown_status_is_rejected_instead_of_silently_dropped(self):
+        for bad in ("PAID", "chargeback"):
+            with self.assertRaises(ValueError) as ctx:
+                Order(95, 100.0, bad)
+            self.assertIn(bad, str(ctx.exception))
+
     def test_unknown_customer(self):
         self.assertEqual(serve_features({}, "ghost", 10.0),
                          {"order_count_30d": 0.0, "avg_order_value_30d": 0.0, "refund_rate_90d": 0.0})

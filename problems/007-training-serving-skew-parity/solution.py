@@ -24,6 +24,7 @@ from dataclasses import dataclass
 
 WINDOW_DAYS = 30
 REFUND_WINDOW_DAYS = 90
+KNOWN_STATUSES = frozenset({"paid", "refunded"})
 
 
 @dataclass(frozen=True)
@@ -32,6 +33,13 @@ class Order:
     amount: float
     status: str        # "paid" or "refunded" (the order's *current* status)
     refunded_at: float | None = None  # when the refund happened, if known
+
+    def __post_init__(self) -> None:
+        # WHY: an unexpected status ("PAID", "chargeback") would otherwise be
+        # silently dropped from every feature on BOTH paths, so parity would
+        # still report 0% mismatch. Fail loudly at the boundary instead.
+        if self.status not in KNOWN_STATUSES:
+            raise ValueError(f"unknown order status {self.status!r}; expected one of {sorted(KNOWN_STATUSES)}")
 
 
 def status_as_of(order: Order, as_of: float) -> str:
