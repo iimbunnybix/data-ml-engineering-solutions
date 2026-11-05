@@ -36,6 +36,7 @@ Every problem folder has the same structure:
 | 019 | [Revenue by customer tier was higher than total revenue after a CRM backfill](problems/019-scd2-late-change-overlapping-versions) |
 | 020 | [Dashboard queries on the clickstream table got slower every day although data volume was flat](problems/020-small-files-compaction-planner) |
 | 021 | [Fraud model recall dropped after every nightly retrain, while offline metrics looked fine](problems/021-label-maturity-training-window) |
+| 022 | [Customer dashboard said the average customer was 43 and earned ₹9.6 lakh; the real numbers were 49 and ₹6.8 lakh](problems/022-sentinel-values-skew-aggregates) |
 <!-- INDEX:END -->
 
 ## Run the tests
