@@ -68,6 +68,22 @@ class SharedDefinition(unittest.TestCase):
         self.assertEqual(f["avg_order_value_30d"], 20.0)
         self.assertAlmostEqual(f["refund_rate_90d"], 1 / 3, places=6)
 
+    def test_refund_after_as_of_does_not_change_features(self):
+        served = compute_features([Order(95, 100.0, "paid"), Order(97, 50.0, "paid")], 100.0)
+        rebuilt = compute_features([Order(95, 100.0, "refunded", refunded_at=120.0),
+                                    Order(97, 50.0, "paid")], 100.0)
+        self.assertEqual(rebuilt, served)
+        pc = ParityChecker()
+        pc.compare("k", served, rebuilt)
+        self.assertEqual(pc.failing(max_rate=0.0), [])
+
+    def test_refund_before_as_of_changes_features(self):
+        f = compute_features([Order(95, 100.0, "refunded", refunded_at=98.0),
+                              Order(97, 50.0, "paid")], 100.0)
+        self.assertEqual(f["order_count_30d"], 1.0)
+        self.assertEqual(f["avg_order_value_30d"], 50.0)
+        self.assertEqual(f["refund_rate_90d"], 0.5)
+
     def test_unknown_customer(self):
         self.assertEqual(serve_features({}, "ghost", 10.0),
                          {"order_count_30d": 0.0, "avg_order_value_30d": 0.0, "refund_rate_90d": 0.0})

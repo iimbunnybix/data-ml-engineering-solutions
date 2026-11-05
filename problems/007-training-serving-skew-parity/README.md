@@ -29,8 +29,11 @@ drift monitoring could not catch it.
 
 ## Solution
 1. **One feature definition.** `compute_features(orders, as_of)` is the single
-   source of truth: paid orders only, strictly-before-`as_of` visibility (which
-   also keeps training point-in-time correct), `0.0` for no history. The
+   source of truth: paid orders only, strictly-before-`as_of` visibility, `0.0`
+   for no history. Refunds are point-in-time too: an order counts as refunded
+   only if its `refunded_at` is before `as_of`, so a refund that happens later
+   does not leak into training rows or break parity replays of logged serving
+   features. (Orders without `refunded_at` fall back to their stored status.) The
    offline builder (`build_training_rows`) and the online path
    (`serve_features`) both call it, so the parity test shows 0% mismatch on
    every feature.

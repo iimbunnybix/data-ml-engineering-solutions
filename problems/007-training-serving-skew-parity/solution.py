@@ -30,7 +30,21 @@ REFUND_WINDOW_DAYS = 90
 class Order:
     ts: float          # days since epoch (fractional)
     amount: float
-    status: str        # "paid" or "refunded"
+    status: str        # "paid" or "refunded" (the order's *current* status)
+    refunded_at: float | None = None  # when the refund happened, if known
+
+
+def status_as_of(order: Order, as_of: float) -> str:
+    """The order's status as it was just before ``as_of``.
+
+    ``status`` is the current value, so a refund that happens after ``as_of``
+    must not be visible when rebuilding features for ``as_of`` (that would leak
+    the future into training and break parity replays). When the refund time
+    is known, it decides; otherwise fall back to the stored status.
+    """
+    if order.refunded_at is not None:
+        return "refunded" if order.refunded_at < as_of else "paid"
+    return order.status
 
 
 FEATURES = ("order_count_30d", "avg_order_value_30d", "refund_rate_90d")
@@ -66,14 +80,17 @@ def compute_features(orders: list[Order], as_of: float) -> dict:
     * Only events strictly before ``as_of`` are visible (no peeking at the
       event being scored, which also keeps training point-in-time correct).
     * ``order_count_30d`` / ``avg_order_value_30d`` count *paid* orders.
+    * Refunds count only if they happened before ``as_of`` (``refunded_at``).
     * No history -> 0.0 (the model also sees ``order_count_30d == 0``).
     """
-    paid = [o for o in orders if as_of - WINDOW_DAYS <= o.ts < as_of and o.status == "paid"]
+    paid = [o for o in orders
+            if as_of - WINDOW_DAYS <= o.ts < as_of and status_as_of(o, as_of) == "paid"]
     recent = [o for o in orders if as_of - REFUND_WINDOW_DAYS <= o.ts < as_of]
+    refunded = [o for o in recent if status_as_of(o, as_of) == "refunded"]
     return {
         "order_count_30d": float(len(paid)),
         "avg_order_value_30d": round(sum(o.amount for o in paid) / len(paid), 6) if paid else 0.0,
-        "refund_rate_90d": round(sum(o.status == "refunded" for o in recent) / len(recent), 6) if recent else 0.0,
+        "refund_rate_90d": round(len(refunded) / len(recent), 6) if recent else 0.0,
     }
 
 
