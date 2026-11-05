@@ -1,4 +1,7 @@
+import os
 import random
+import sqlite3
+import tempfile
 import unittest
 from datetime import date
 
@@ -96,6 +99,68 @@ class IdempotentBackfill(unittest.TestCase):
         self.assertEqual(report["written"], ["2026-10-01"])
         self.assertEqual(backfill(self.db, date(2026, 10, 1), date(2026, 10, 1))["skipped"],
                          ["2026-10-01"])
+
+
+class LatePaymentDuringWrite:
+    """Connection wrapper that simulates another writer inserting a late
+    payment right after the job has read the day's aggregate.
+
+    The insert comes from a second connection with no busy timeout, so it
+    fails with "database is locked" if the job holds a write transaction. In
+    that case the payment is inserted after the job commits instead, which is
+    what a real retrying writer would do.
+    """
+
+    def __init__(self, path: str, day: str) -> None:
+        self.db = connect(path)
+        self.other_writer = sqlite3.connect(path, isolation_level=None, timeout=0)
+        self.day = day
+        self.pending = True
+        self.aggregate_was_read = False
+        self.blocked = False
+
+    def execute(self, sql, params=()):
+        # The late payment arrives just before the job's next statement after
+        # the aggregate read (once that read's cursor has been consumed).
+        if self.aggregate_was_read:
+            self.aggregate_was_read = False
+            self._try_insert_late_payment()
+        cursor = self.db.execute(sql, params)
+        if self.pending and "SUM(amount_cents)" in sql:
+            self.pending = False
+            self.aggregate_was_read = True
+        if self.blocked and sql == "COMMIT":
+            self.blocked = False
+            self._insert_late_payment()
+        return cursor
+
+    def executemany(self, sql, rows):
+        return self.db.executemany(sql, rows)
+
+    def _try_insert_late_payment(self):
+        try:
+            self._insert_late_payment()
+        except sqlite3.OperationalError:
+            self.blocked = True
+
+    def _insert_late_payment(self):
+        self.other_writer.execute(
+            "INSERT INTO payments VALUES ('late', ?, 'A', 777)", (self.day,))
+
+
+class LatePaymentDuringPartitionWrite(unittest.TestCase):
+    def test_payment_inserted_mid_write_is_counted_on_the_next_run(self):
+        day = date(2026, 9, 5)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "warehouse.db")
+            db = LatePaymentDuringWrite(path, day.isoformat())
+            db.execute("INSERT INTO payments VALUES ('p1', ?, 'A', 1000)", (day.isoformat(),))
+            backfill(db, day, day)
+            second = backfill(db, day, day)
+            self.assertEqual(second["written"], [day.isoformat()])
+            self.assertEqual(total_revenue(db, day, day), 1777)
+            db.db.close()
+            db.other_writer.close()
 
 
 if __name__ == "__main__":

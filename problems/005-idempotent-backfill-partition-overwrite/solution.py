@@ -83,10 +83,14 @@ def backfill_append(db, start: date, end: date,
 def write_partition(db: sqlite3.Connection, day: str,
                     fail_mid_write: bool = False) -> int:
     """Atomically replace one day's partition; return rows written."""
-    rows = _aggregate(db, day)
-    fp = input_fingerprint(db, day)
+    # Start the transaction BEFORE reading the source. The aggregate and the
+    # fingerprint must see the same rows: if a late payment landed between
+    # two autocommit reads, the manifest would claim it was counted and every
+    # later run would skip the day, losing the payment for good.
     db.execute("BEGIN IMMEDIATE")
     try:
+        rows = _aggregate(db, day)
+        fp = input_fingerprint(db, day)
         db.execute("DELETE FROM daily_revenue WHERE day = ?", (day,))
         db.executemany("INSERT INTO daily_revenue VALUES (?, ?, ?, ?)", rows)
         if fail_mid_write:
