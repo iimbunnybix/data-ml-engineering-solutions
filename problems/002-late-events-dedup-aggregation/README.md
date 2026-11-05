@@ -26,6 +26,11 @@ An event-time aggregator with:
 - Events for an already finalised day are not silently dropped or added:
   they go to a **late-events ledger** that finance can reconcile as an
   adjustment the next day.
+- **Future-time guard**: with a processing-time `clock`, events stamped more
+  than 5 minutes ahead of it (a phone with a wrong clock) go to a
+  `future_quarantine` list instead of advancing the watermark. Otherwise one
+  such event would finalise today's window early and evict every remembered
+  event id.
 
 This mirrors how Flink / Spark Structured Streaming / Beam handle it
 (`withWatermark` + `dropDuplicates`), in ~60 lines of plain Python.

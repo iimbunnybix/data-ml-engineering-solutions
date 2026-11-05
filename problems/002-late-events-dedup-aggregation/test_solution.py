@@ -67,5 +67,56 @@ class AggregatorTests(unittest.TestCase):
         self.assertLess(len(agg._seen), 60)
 
 
+class FakeClock:
+    """Processing-time clock the test moves by hand."""
+
+    def __init__(self, now: datetime):
+        self.now = now
+
+    def __call__(self) -> datetime:
+        return self.now
+
+
+class FutureDatedEventTests(unittest.TestCase):
+    def make_aggregator_with_bad_phone_event(self):
+        clock = FakeClock(datetime(2026, 11, 1, 12))
+        agg = DailyRevenueAggregator(clock=clock)
+        agg.process(ev(1, 1, 10, 100.0))
+        agg.process(ev(2, 1, 11, 50.0))
+        # phone clock one year ahead
+        agg.process(Event("bad", datetime(2027, 11, 1, 10), 1.0))
+        return agg
+
+    def test_without_clock_future_event_closes_todays_window(self):
+        agg = DailyRevenueAggregator()
+        agg.process(ev(1, 1, 10))
+        agg.process(Event("bad", datetime(2027, 11, 1, 10), 1.0))
+        self.assertIn(date(2026, 11, 1), agg.finalised)
+
+    def test_future_event_is_quarantined(self):
+        agg = self.make_aggregator_with_bad_phone_event()
+        self.assertEqual([e.event_id for e in agg.future_quarantine], ["bad"])
+
+    def test_future_event_does_not_finalise_open_window(self):
+        agg = self.make_aggregator_with_bad_phone_event()
+        self.assertNotIn(date(2026, 11, 1), agg.finalised)
+        self.assertEqual(agg.open_windows[date(2026, 11, 1)], 150.0)
+
+    def test_retry_after_future_event_is_still_deduplicated(self):
+        agg = self.make_aggregator_with_bad_phone_event()
+        agg.process(ev(1, 1, 10, 100.0))
+        agg.process(ev(3, 1, 12, 70.0))
+        self.assertEqual(agg.duplicates_dropped, 1)
+        self.assertEqual(agg.open_windows[date(2026, 11, 1)], 220.0)
+        self.assertEqual(agg.late_adjustments(), {})
+
+    def test_event_within_skew_tolerance_is_accepted(self):
+        clock = FakeClock(datetime(2026, 11, 1, 12))
+        agg = DailyRevenueAggregator(clock=clock)
+        agg.process(Event("o1", datetime(2026, 11, 1, 12, 4), 10.0))
+        self.assertEqual(agg.future_quarantine, [])
+        self.assertEqual(agg.open_windows[date(2026, 11, 1)], 10.0)
+
+
 if __name__ == "__main__":
     unittest.main()
