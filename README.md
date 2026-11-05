@@ -50,6 +50,7 @@ Every problem folder has the same structure:
 | 033 | [The retention team staffed for 13,400 churners and 6,000 left; most customers flagged "more likely than not to leave" stayed](problems/033-uncalibrated-scores-capacity-forecast) |
 | 034 | [The daily wire-total reconciliation alerted every morning over two cents, and each rerun of the job gave a slightly different total](problems/034-order-dependent-float-revenue-totals) |
 | 035 | [A tenth of yesterday's revenue was booked to region "Unknown", although every customer had a region in the CRM](problems/035-early-arriving-facts-unknown-region) |
+| 036 | [The risk model kept flagging customers who shop once a month, because their "7-day spend" included purchases from months ago](problems/036-row-window-feature-sparse-days) |
 <!-- INDEX:END -->
 
 ## Run the tests
