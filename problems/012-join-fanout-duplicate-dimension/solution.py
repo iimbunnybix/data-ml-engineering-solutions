@@ -83,11 +83,26 @@ def validated_join(left: Sequence[Record], right: Sequence[Record], key: str,
     return naive_left_join(left, right, key)
 
 
+def _is_newer(candidate: object, current: object) -> bool:
+    """True if ``candidate`` sorts after ``current`` as an ``order_by`` value.
+
+    CRM re-syncs sometimes leave the timestamp empty. A missing (``None``)
+    value is treated as older than any real value, so a row with a timestamp
+    always wins; comparing ``None > "2026-10-01"`` directly would crash.
+    """
+    if candidate is None:
+        return False
+    if current is None:
+        return True
+    return candidate > current
+
+
 def dedupe_latest(rows: Sequence[Record], key: str, order_by: str) -> List[Record]:
     """Keep one row per key: the one with the greatest ``order_by`` value.
 
     Exact ties on ``order_by`` are ambiguous, so they raise instead of
-    silently picking one.
+    silently picking one. A missing ``order_by`` counts as older than any
+    real value; two rows that both lack it and differ are an ambiguous tie.
 
     Rows with a NULL (``None``) key are passed through unchanged: in SQL a
     NULL key never matches, so they are not duplicates of each other and
@@ -102,7 +117,7 @@ def dedupe_latest(rows: Sequence[Record], key: str, order_by: str) -> List[Recor
             null_key_rows.append(r)
             continue
         cur = best.get(k)
-        if cur is None or r[order_by] > cur[order_by]:
+        if cur is None or _is_newer(r[order_by], cur[order_by]):
             best[k] = r
             tied.discard(k)
         elif r[order_by] == cur[order_by] and r != cur:

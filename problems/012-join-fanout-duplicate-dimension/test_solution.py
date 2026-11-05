@@ -93,6 +93,18 @@ class ValidatedJoinFix(unittest.TestCase):
         self.assertEqual(null_regions, ["X", "Y"])
         self.assertEqual(len(deduped), 3)
 
+    def test_row_with_timestamp_beats_row_without_one(self):
+        rows = [{"customer_id": 1, "region": "EU", "updated_at": "2026-10-01"},
+                {"customer_id": 1, "region": "US", "updated_at": None}]
+        self.assertEqual(dedupe_latest(rows, "customer_id", "updated_at")[0]["region"], "EU")
+        self.assertEqual(dedupe_latest(rows[::-1], "customer_id", "updated_at")[0]["region"], "EU")
+
+    def test_two_different_rows_without_timestamp_are_an_ambiguous_tie(self):
+        rows = [{"customer_id": 1, "region": "EU", "updated_at": None},
+                {"customer_id": 1, "region": "US", "updated_at": None}]
+        with self.assertRaises(CardinalityError):
+            dedupe_latest(rows, "customer_id", "updated_at")
+
     def test_one_to_one_checks_left_side_too(self):
         left = [{"k": 1}, {"k": 1}]
         with self.assertRaises(CardinalityError) as ctx:
