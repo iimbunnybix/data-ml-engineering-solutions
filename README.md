@@ -48,6 +48,7 @@ Every problem folder has the same structure:
 | 031 | [The retention team spent a week calling happy customers while the churn model's real high-risk list went uncalled](problems/031-batch-scores-joined-by-row-position) |
 | 032 | [After a merchant-onboarding push, customers of 220 honest shops had their cards declined as fraud](problems/032-feature-hashing-merchant-collisions) |
 | 033 | [The retention team staffed for 13,400 churners and 6,000 left; most customers flagged "more likely than not to leave" stayed](problems/033-uncalibrated-scores-capacity-forecast) |
+| 034 | [The daily wire-total reconciliation alerted every morning over two cents, and each rerun of the job gave a slightly different total](problems/034-order-dependent-float-revenue-totals) |
 <!-- INDEX:END -->
 
 ## Run the tests
