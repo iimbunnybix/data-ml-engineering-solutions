@@ -88,11 +88,19 @@ def dedupe_latest(rows: Sequence[Record], key: str, order_by: str) -> List[Recor
 
     Exact ties on ``order_by`` are ambiguous, so they raise instead of
     silently picking one.
+
+    Rows with a NULL (``None``) key are passed through unchanged: in SQL a
+    NULL key never matches, so they are not duplicates of each other and
+    there is nothing to resolve (same rule as ``duplicate_keys``).
     """
     best: Dict[object, Record] = {}
+    null_key_rows: List[Record] = []
     tied: set = set()
     for r in rows:
         k = r[key]
+        if k is None:
+            null_key_rows.append(r)
+            continue
         cur = best.get(k)
         if cur is None or r[order_by] > cur[order_by]:
             best[k] = r
@@ -101,7 +109,7 @@ def dedupe_latest(rows: Sequence[Record], key: str, order_by: str) -> List[Recor
             tied.add(k)
     if tied:
         raise CardinalityError("right", f"{key} (tied on {order_by})", {k: 2 for k in tied})
-    return list(best.values())
+    return list(best.values()) + null_key_rows
 
 
 def total(rows: Iterable[Record], measure: str) -> Decimal:

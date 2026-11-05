@@ -84,6 +84,15 @@ class ValidatedJoinFix(unittest.TestCase):
         joined = validated_join(facts, dim, "customer_id")
         self.assertEqual(len(joined), 2)
 
+    def test_dedupe_passes_null_key_rows_through_unchanged(self):
+        dim = [{"customer_id": 1, "region": "EU", "updated_at": "2026-10-01"},
+               {"customer_id": None, "region": "X", "updated_at": "2026-10-01"},
+               {"customer_id": None, "region": "Y", "updated_at": "2026-10-01"}]
+        deduped = dedupe_latest(dim, "customer_id", "updated_at")
+        null_regions = sorted(r["region"] for r in deduped if r["customer_id"] is None)
+        self.assertEqual(null_regions, ["X", "Y"])
+        self.assertEqual(len(deduped), 3)
+
     def test_one_to_one_checks_left_side_too(self):
         left = [{"k": 1}, {"k": 1}]
         with self.assertRaises(CardinalityError) as ctx:
