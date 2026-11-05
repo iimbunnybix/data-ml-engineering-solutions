@@ -29,6 +29,7 @@ Every problem folder has the same structure:
 | 012 | [Revenue by region jumped 15% overnight with no change in orders, and the sales team started celebrating](problems/012-join-fanout-duplicate-dimension) |
 | 013 | [The warehouse quietly disagreed with production: a few orders per day were missing or stuck at an old status, forever](problems/013-incremental-watermark-missed-rows) |
 | 014 | [The new chargeback model's merchant feature scored 0.77 AUC in validation, and 0.55 in production](problems/014-target-encoding-leakage) |
+| 015 | [The daily revenue report showed 42% of the day's sales, and keyless orders were booked to "Test accounts"](problems/015-null-join-keys-dropped-rows) |
 <!-- INDEX:END -->
 
 ## Run the tests
