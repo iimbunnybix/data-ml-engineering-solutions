@@ -32,6 +32,7 @@ Every problem folder has the same structure:
 | 015 | [The daily revenue report showed 42% of the day's sales, and keyless orders were booked to "Test accounts"](problems/015-null-join-keys-dropped-rows) |
 | 016 | [Every dashboard showed a 50% drop in Tuesday's events, but users and revenue were normal](problems/016-partition-volume-anomaly-check) |
 | 017 | [Sales table showed a day's revenue twice after the nightly load job was restarted](problems/017-file-reingestion-double-count) |
+| 018 | [Fraud alerts went from "84% are real" in testing to 19 out of 20 false alarms in production](problems/018-balanced-sample-threshold-precision) |
 <!-- INDEX:END -->
 
 ## Run the tests
