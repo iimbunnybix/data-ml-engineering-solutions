@@ -31,6 +31,9 @@ ends with **29 of 186 keys wrong**, including 1 resurrected deleted row.
 2. The sink stores the LSN of the last change applied to each key and ignores
    any event with `lsn <= stored_lsn`. Re-deliveries and stale events become
    no-ops. In SQL this is `MERGE ... WHEN MATCHED AND src.lsn > tgt.lsn`.
+   LSNs must be integers: PostgreSQL's textual form (`"0/9"`, `"0/10"`)
+   compares wrongly as a string, so the sink rejects non-integer LSNs and
+   `parse_pg_lsn("X/Y")` converts the text form first.
 3. Deletes are stored as **tombstones** (key + delete LSN) instead of
    removing the row, so a late, older update is recognised as stale.
 4. `purge_tombstones(safe_lsn)` removes tombstones older than a low watermark

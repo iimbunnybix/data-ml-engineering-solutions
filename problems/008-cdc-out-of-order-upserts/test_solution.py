@@ -2,7 +2,7 @@ import random
 import unittest
 
 from solution import (ChangeEvent, NaiveSink, VersionedSink, at_least_once_delivery,
-                      generate_changes, source_state)
+                      generate_changes, parse_pg_lsn, source_state)
 
 
 def mismatched_keys(snapshot, truth):
@@ -84,6 +84,33 @@ class LsnGuardedApply(unittest.TestCase):
             sink.apply(ChangeEvent("x", "o1", 1, {}))
         with self.assertRaises(ValueError):
             sink.apply(ChangeEvent("u", "o1", 1, None))
+
+    def test_textual_lsn_is_rejected_instead_of_compared_as_string(self):
+        sink = VersionedSink()
+        sink.apply(ChangeEvent("u", "o", 16, {"s": "shipped"}))
+        with self.assertRaises(ValueError):
+            sink.apply(ChangeEvent("u", "o", "0/9", {"s": "pending"}))
+        self.assertEqual(sink.snapshot(), {"o": {"s": "shipped"}})
+
+    def test_bool_and_negative_lsns_are_rejected(self):
+        sink = VersionedSink()
+        for bad_lsn in (True, -1):
+            with self.assertRaises(ValueError):
+                sink.apply(ChangeEvent("u", "o", bad_lsn, {"s": "paid"}))
+
+    def test_parsed_pg_lsns_compare_in_wal_order(self):
+        self.assertLess(parse_pg_lsn("0/9"), parse_pg_lsn("0/10"))
+        self.assertLess(parse_pg_lsn("0/FFFFFFFF"), parse_pg_lsn("1/0"))
+        self.assertEqual(parse_pg_lsn("1/2A"), (1 << 32) | 0x2A)
+        sink = VersionedSink()
+        sink.apply(ChangeEvent("u", "o", parse_pg_lsn("0/10"), {"s": "shipped"}))
+        self.assertFalse(sink.apply(ChangeEvent("u", "o", parse_pg_lsn("0/9"), {"s": "pending"})))
+        self.assertEqual(sink.snapshot(), {"o": {"s": "shipped"}})
+
+    def test_malformed_pg_lsn_is_rejected(self):
+        for text in ("09", "0/", "0/xyz", "-1/0"):
+            with self.assertRaises(ValueError):
+                parse_pg_lsn(text)
 
 
 class TombstonePurge(unittest.TestCase):

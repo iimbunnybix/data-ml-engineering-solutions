@@ -29,6 +29,19 @@ class ChangeEvent:
     after: dict | None      # new row image (None for deletes)
 
 
+def parse_pg_lsn(text: str) -> int:
+    """Convert PostgreSQL's textual LSN ``"X/Y"`` (two hex halves) to an int.
+
+    Textual LSNs must not be compared as strings: ``"0/9" > "0/10"``
+    lexicographically, although 0/9 is older in the WAL.
+    """
+    high, sep, low = text.partition("/")
+    hex_digits = "0123456789abcdefABCDEF"
+    if not sep or not high or not low or any(c not in hex_digits for c in high + low):
+        raise ValueError(f"malformed LSN {text!r}")
+    return (int(high, 16) << 32) | int(low, 16)
+
+
 class NaiveSink:
     """Arrival-order apply. Correct only if delivery is exactly-once and in order."""
 
@@ -69,6 +82,11 @@ class VersionedSink:
             raise ValueError(f"unknown op {ev.op!r}")
         if ev.op != "d" and ev.after is None:
             raise ValueError("create/update without row image")
+        # The guard below is only correct for integer LSNs: strings like "0/9"
+        # would compare lexicographically and let stale events win.
+        if isinstance(ev.lsn, bool) or not isinstance(ev.lsn, int) or ev.lsn < 0:
+            raise ValueError(f"lsn must be a non-negative int, got {ev.lsn!r}; "
+                             "use parse_pg_lsn() for textual LSNs")
         cur = self.entries.get(ev.key)
         if cur is not None and ev.lsn <= cur.lsn:
             self.skipped_stale += 1           # duplicate or older than current state
