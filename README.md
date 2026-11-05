@@ -46,6 +46,7 @@ Every problem folder has the same structure:
 | 029 | [Delivery ETAs were 20 minutes too optimistic all evening while every dashboard stayed green](problems/029-stale-online-features-freshness-ttl) |
 | 030 | [Churn model's launch-review accuracy kept coming in about 3 points lower in production](problems/030-test-set-reuse-model-selection) |
 | 031 | [The retention team spent a week calling happy customers while the churn model's real high-risk list went uncalled](problems/031-batch-scores-joined-by-row-position) |
+| 032 | [After a merchant-onboarding push, customers of 220 honest shops had their cards declined as fraud](problems/032-feature-hashing-merchant-collisions) |
 <!-- INDEX:END -->
 
 ## Run the tests
