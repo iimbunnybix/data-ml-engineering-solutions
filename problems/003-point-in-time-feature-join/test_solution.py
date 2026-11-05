@@ -73,6 +73,14 @@ class PointInTimeTests(unittest.TestCase):
         self.assertEqual(j.lookup("a", 60), 2.0)
         self.assertEqual(j.lookup("a", 30), 2.0)
 
+    def test_correction_wins_even_when_entity_has_a_late_backfill(self):
+        # Same feature_ts re-ingested later as a correction, plus an unrelated backfill.
+        j = PointInTimeJoiner([FeatureRow("a", 20, 2.0, ingested_ts=21),
+                               FeatureRow("a", 10, 1.0, ingested_ts=50),
+                               FeatureRow("a", 20, 2.5, ingested_ts=60)])
+        self.assertEqual(j.lookup("a", 70), 2.5)
+        self.assertEqual(j.lookup("a", 55), 2.0)   # correction not yet available
+
     def test_input_order_irrelevant(self):
         labels, feats = chargeback_dataset(n_users=100)
         shuffled = feats[:]

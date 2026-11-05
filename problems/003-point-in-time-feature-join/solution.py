@@ -86,8 +86,10 @@ class PointInTimeJoiner:
         if idx < 0:
             return self.default
         # A late-arriving older value may be "available" after a newer one; pick
-        # the max feature_ts among everything available by as_of.
-        best = max(self._rows[entity_id][: idx + 1], key=lambda r: r.feature_ts) \
+        # the max feature_ts among everything available by as_of. Ties on
+        # feature_ts go to the latest write, so a re-ingested correction wins.
+        best = max(self._rows[entity_id][: idx + 1],
+                   key=lambda r: (r.feature_ts, r.available_ts)) \
             if self._out_of_order[entity_id] else self._rows[entity_id][idx]
         if self.ttl_s is not None and as_of - best.feature_ts > self.ttl_s:
             return self.default
