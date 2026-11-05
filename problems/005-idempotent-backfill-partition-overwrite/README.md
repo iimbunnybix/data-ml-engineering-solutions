@@ -32,6 +32,9 @@ Make each partition write **idempotent and atomic**, and make the job
   job stores a SHA-256 of its source rows in `backfill_manifest` (in the same
   transaction). A re-run skips days with an unchanged fingerprint: after the
   day-18 crash, the re-run skips 17 days, writes 13, and the total is exact.
+- **Logic changes are picked up.** The manifest also stores `LOGIC_VERSION`.
+  Bumping it after a fix to the revenue logic makes the next run rewrite every
+  day, even though the source rows are unchanged.
 - **Changed inputs are picked up.** A late payment for Sep 5 changes that
   day's fingerprint, so only Sep 5 is recomputed. Deleted source rows disappear
   from the output too, which append-only jobs can never do.

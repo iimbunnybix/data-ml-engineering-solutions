@@ -29,11 +29,17 @@ CREATE TABLE IF NOT EXISTS daily_revenue (
 );
 CREATE TABLE IF NOT EXISTS backfill_manifest (
     job TEXT NOT NULL, day TEXT NOT NULL, input_fingerprint TEXT NOT NULL,
-    rows_written INTEGER NOT NULL, PRIMARY KEY (job, day)
+    logic_version TEXT NOT NULL, rows_written INTEGER NOT NULL,
+    PRIMARY KEY (job, day)
 );
 """
 
 JOB = "daily_revenue"
+
+# Bump this whenever the aggregation logic changes. The manifest stores it
+# next to the input fingerprint, so a re-run after a logic fix rewrites every
+# day instead of skipping them because "the inputs did not change".
+LOGIC_VERSION = "v1"
 
 
 def connect(path: str = ":memory:") -> sqlite3.Connection:
@@ -81,7 +87,8 @@ def backfill_append(db, start: date, end: date,
 
 # --- fixed job ------------------------------------------------------------
 def write_partition(db: sqlite3.Connection, day: str,
-                    fail_mid_write: bool = False) -> int:
+                    fail_mid_write: bool = False,
+                    logic_version: str = LOGIC_VERSION) -> int:
     """Atomically replace one day's partition; return rows written."""
     # Start the transaction BEFORE reading the source. The aggregate and the
     # fingerprint must see the same rows: if a late payment landed between
@@ -96,8 +103,8 @@ def write_partition(db: sqlite3.Connection, day: str,
         if fail_mid_write:
             raise RuntimeError("executor lost mid-write")
         db.execute(
-            "INSERT OR REPLACE INTO backfill_manifest VALUES (?, ?, ?, ?)",
-            (JOB, day, fp, len(rows)),
+            "INSERT OR REPLACE INTO backfill_manifest VALUES (?, ?, ?, ?, ?)",
+            (JOB, day, fp, logic_version, len(rows)),
         )
         db.execute("COMMIT")
     except BaseException:
@@ -107,24 +114,30 @@ def write_partition(db: sqlite3.Connection, day: str,
 
 
 def backfill(db: sqlite3.Connection, start: date, end: date, *, force: bool = False,
-             fail_on: Callable[[date], bool] = lambda d: False) -> dict[str, list[str]]:
+             fail_on: Callable[[date], bool] = lambda d: False,
+             logic_version: str = LOGIC_VERSION) -> dict[str, list[str]]:
     """Idempotent backfill over [start, end].
 
     A day is skipped when the manifest says it was written from identical
-    input; it is (re)written when new, changed, or ``force`` is set.
+    input by the same ``logic_version``; it is (re)written when new, when its
+    input or the logic changed, or when ``force`` is set.
     ``fail_on`` simulates a crash in the middle of that day's write.
     """
     report: dict[str, list[str]] = {"written": [], "skipped": []}
     for d in days(start, end):
         day = d.isoformat()
         prev = db.execute(
-            "SELECT input_fingerprint FROM backfill_manifest WHERE job = ? AND day = ?",
+            "SELECT input_fingerprint, logic_version FROM backfill_manifest "
+            "WHERE job = ? AND day = ?",
             (JOB, day),
         ).fetchone()
-        if not force and prev and prev[0] == input_fingerprint(db, day):
+        unchanged = (prev is not None
+                     and prev[0] == input_fingerprint(db, day)
+                     and prev[1] == logic_version)
+        if not force and unchanged:
             report["skipped"].append(day)
             continue
-        write_partition(db, day, fail_mid_write=fail_on(d))
+        write_partition(db, day, fail_mid_write=fail_on(d), logic_version=logic_version)
         report["written"].append(day)
     return report
 

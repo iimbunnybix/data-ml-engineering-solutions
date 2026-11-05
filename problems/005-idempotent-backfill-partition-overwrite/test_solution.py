@@ -163,5 +163,26 @@ class LatePaymentDuringPartitionWrite(unittest.TestCase):
             db.other_writer.close()
 
 
+class LogicVersionInManifest(unittest.TestCase):
+    def test_rerun_with_new_logic_version_rewrites_every_day(self):
+        db, _ = seeded_db()
+        backfill(db, START, END, logic_version="v1")
+        report = backfill(db, START, END, logic_version="v2")
+        self.assertEqual(len(report["written"]), 30)
+        self.assertEqual(report["skipped"], [])
+
+    def test_rerun_with_same_logic_version_still_skips(self):
+        db, _ = seeded_db()
+        backfill(db, START, END, logic_version="v2")
+        report = backfill(db, START, END, logic_version="v2")
+        self.assertEqual(len(report["skipped"]), 30)
+
+    def test_manifest_records_the_logic_version_used(self):
+        db, _ = seeded_db()
+        backfill(db, START, START, logic_version="v7")
+        stored = db.execute("SELECT logic_version FROM backfill_manifest").fetchall()
+        self.assertEqual(stored, [("v7",)])
+
+
 if __name__ == "__main__":
     unittest.main()
