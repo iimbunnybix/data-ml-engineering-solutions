@@ -11,6 +11,7 @@ staged data for inspection, and returns a report for alerting.
 """
 from __future__ import annotations
 
+import math
 import statistics
 from dataclasses import dataclass, field
 from typing import Callable, Optional
@@ -100,9 +101,22 @@ def unique_audit(column: str) -> Audit:
 
 
 def range_audit(column: str, minimum: float) -> Audit:
+    """Values must be finite and >= ``minimum``.
+
+    Every comparison with NaN is False, so ``nan < minimum`` alone would let a
+    NaN through and turn the day's revenue into NaN; ``math.isfinite`` also
+    rejects NaN and +/-inf.
+    """
     def audit(rows: list[Row], _history: list[int]) -> AuditResult:
-        bad = sum(1 for r in rows if r.get(column) is not None and r[column] < minimum)
-        return AuditResult(f"range:{column}", bad == 0, f"{bad} rows with {column} < {minimum}")
+        bad = 0
+        for r in rows:
+            value = r.get(column)
+            if value is None:
+                continue                                 # null_rate_audit owns missing values
+            if not math.isfinite(value) or value < minimum:
+                bad += 1
+        return AuditResult(f"range:{column}", bad == 0,
+                           f"{bad} rows with {column} < {minimum} or not finite")
     return audit
 
 

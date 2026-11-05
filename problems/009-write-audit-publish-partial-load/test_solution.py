@@ -93,6 +93,19 @@ class WriteAuditPublish(unittest.TestCase):
         self.assertNotIn(TODAY, self.wh.published)
         self.assertEqual(len(self.wh.quarantine[TODAY]), 10_000)
 
+    def test_nan_amount_is_quarantined_not_published(self):
+        rows = day_rows(self.rng, TODAY, 10_000)
+        rows[3]["amount"] = float("nan")                # "nan" string parsed with float()
+        report = self.loader.load(TODAY, rows)
+        self.assertEqual([f.name for f in report.failures], ["range:amount"])
+        self.assertNotIn(TODAY, self.wh.published)
+
+    def test_infinite_amount_is_caught(self):
+        rows = day_rows(self.rng, TODAY, 10_000)
+        rows[3]["amount"] = float("inf")                # division by zero upstream
+        self.assertEqual([f.name for f in self.loader.load(TODAY, rows).failures],
+                         ["range:amount"])
+
     def test_empty_partition_fails(self):
         report = self.loader.load(TODAY, [])
         self.assertIn("row_count", [f.name for f in report.failures])

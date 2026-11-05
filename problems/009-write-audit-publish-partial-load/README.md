@@ -28,7 +28,9 @@ a 10,000-order day shows **40.7% of the true revenue**, i.e. "down 59%".
      the revenue query), `customer_id` ≤ 1% (catches broken joins);
    - *uniqueness* of `order_id` (catches a file loaded twice, which a row-count
      check at exactly 2.0× would miss);
-   - *range*: no negative amounts.
+   - *range*: no negative amounts, and no NaN or infinite ones (any
+     comparison with NaN is false, so a plain `< 0` check would let it through
+     and the day's revenue would become NaN).
 3. **Publish** with an atomic pointer swap only if every audit passes. On
    failure, the staged data moves to **quarantine** for inspection, the
    published table keeps its last good state, and the report is raised as an
@@ -36,7 +38,7 @@ a 10,000-order day shows **40.7% of the true revenue**, i.e. "down 59%".
    `force=True` exists for a human who has confirmed an unusual day is real.
 
 In the tests, the truncated load fails with `4100 rows = 0.42x median 9816`,
-while a 1.8× sale day passes, and duplicate, null and negative-amount
+while a 1.8× sale day passes, and duplicate, null, negative- and NaN-amount
 partitions are each caught by exactly the audit meant for them.
 
 ## Trade-offs
