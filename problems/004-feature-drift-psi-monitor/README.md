@@ -24,7 +24,8 @@ standard thresholds **< 0.1 ok, 0.1-0.2 warn, > 0.2 alert**.
 
 - **Numeric features**: bin edges are training-set deciles, so each bin
   holds ~10% of training data. Edges are de-duplicated for features with
-  point masses (e.g. many zeros) so no empty bins are created.
+  point masses (e.g. many zeros), and an edge equal to the training
+  minimum is dropped, so no bin has an expected share of zero.
 - **Categorical features**: categories under 1% share, and any category
   never seen in training, fall into an `__other__` bucket, so a renamed
   value shows up as drift instead of disappearing.

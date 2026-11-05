@@ -49,6 +49,9 @@ class NumericBaseline:
             raise ValueError("no non-missing training values")
         # interior quantile edges; dedupe so heavy point masses don't create empty bins
         edges = sorted({present[int(len(present) * q / bins)] for q in range(1, bins)})
+        # An edge equal to the training minimum would leave bin 0 (value < min) empty,
+        # so a few serving values below the minimum would be scored against the EPS floor.
+        edges = [edge for edge in edges if edge > present[0]]
         base = cls(edges, [], 1 - len(present) / len(vals))
         base.expected = _proportions(base._counts(present))
         return base

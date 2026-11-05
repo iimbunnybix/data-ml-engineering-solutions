@@ -64,6 +64,17 @@ class DriftTests(unittest.TestCase):
         s, _ = b.score([0.0] * 900 + [1.0] * 100)
         self.assertAlmostEqual(s, 0.0)
 
+    def test_zero_inflated_feature_has_no_empty_expected_bin(self):
+        b = NumericBaseline.fit([0.0] * 900 + [1.0] * 100)
+        self.assertEqual(b.expected, [0.9, 0.1])
+        self.assertNotIn(0.0, NumericBaseline.fit([1.0, 2.0, 3.0]).expected)
+
+    def test_few_values_below_training_minimum_do_not_warn(self):
+        # 3% small negative refunds next to a feature whose training minimum is 0
+        b = NumericBaseline.fit([0.0] * 900 + [1.0] * 100)
+        s, _ = b.score([-0.5] * 30 + [0.0] * 870 + [1.0] * 100)
+        self.assertLess(s, 0.1)
+
     def test_small_window_rejected(self):
         with self.assertRaises(ValueError):
             self.mon.check(rows(100, seed=7))
