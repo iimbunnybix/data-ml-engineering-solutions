@@ -131,6 +131,17 @@ class SafeExtraction(unittest.TestCase):
         self.assertTrue(rep.by_hour)
         self.assertEqual(sum(rep.by_hour.values()), len(rep.missing) + len(rep.stale))
 
+    def test_long_transaction_of_short_statements_breaks_settle_and_reconcile_catches_it(self):
+        # A batch transaction of 300 one-second UPDATEs stamps rows at t=1000
+        # but commits at t=1300. statement_timeout / idle_in_transaction
+        # timeouts of 60 s never fire, so only a total-transaction bound
+        # (transaction_timeout) would have protected the 120 s settle window.
+        writes = [Write(1, 1, 900, 900), Write(2, 1, 1000, 1300), Write(3, 1, 1050, 1050)]
+        src, tgt = SourceTable(writes), Target()
+        replay(SafeExtractor(src, tgt, 120), 0, 2000, 300)
+        self.assertEqual(sorted(tgt.rows), [1, 3])
+        self.assertEqual(reconcile(src, tgt, 2000, 1880).missing, [2])
+
 
 if __name__ == "__main__":
     unittest.main()

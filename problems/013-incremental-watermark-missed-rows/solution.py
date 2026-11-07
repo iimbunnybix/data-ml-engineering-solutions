@@ -118,8 +118,10 @@ class SafeExtractor:
     Only rows with ``updated_at <= now - settle_seconds`` are read. If no
     transaction runs longer than ``settle_seconds``, every row with such a
     timestamp has already committed, so the cursor never passes a row that is
-    still invisible. Set ``settle_seconds`` above the database's statement /
-    idle-in-transaction timeout so the guarantee is enforced, not hoped for.
+    still invisible. Set ``settle_seconds`` above a bound on *total*
+    transaction duration (``transaction_timeout`` on PostgreSQL 17+, or a
+    monitor on ``pg_stat_activity.xact_start``). Per-statement and
+    idle-in-transaction timeouts do not bound a transaction's length.
     """
 
     def __init__(self, source: SourceTable, target: Target, settle_seconds: int,

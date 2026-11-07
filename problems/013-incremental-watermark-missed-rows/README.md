@@ -36,9 +36,13 @@ seeded days: 73 of 24,513 rows (0.30%).
 - **Settled upper bound.** `SafeExtractor` only reads rows with
   `updated_at <= now - settle_seconds`. If no transaction lasts longer than
   `settle_seconds`, every row with such a timestamp has already committed,
-  so the cursor never passes a row that is still invisible. Enforce the bound
-  in the database with `statement_timeout` / `idle_in_transaction_session_timeout`
-  below the settle window, so the assumption is guaranteed.
+  so the cursor never passes a row that is still invisible. Enforce a bound on
+  *total transaction duration* below the settle window: `transaction_timeout`
+  on PostgreSQL 17+, or on older versions a monitor that terminates
+  transactions whose `pg_stat_activity.xact_start` is older than the window.
+  `statement_timeout` and `idle_in_transaction_session_timeout` are not
+  enough: they limit one statement and the idle gap between statements, so a
+  transaction of many short statements can stay open far longer.
 - **Keyset cursor on `(updated_at, id)`.** Pages are read with
   `WHERE (updated_at, id) > (:ts, :id) ORDER BY updated_at, id`, so ties are
   never skipped regardless of page size.
@@ -52,7 +56,8 @@ seeded days: 73 of 24,513 rows (0.30%).
 Tests: with `settle_seconds=120`, 0 wrong rows across 5 seeded days; page-
 boundary ties are kept; a full re-extract is a no-op; and when transactions
 run up to 15 minutes (longer than the settle window), reconciliation reports
-the affected rows by hour.
+the affected rows by hour, including a 300-second transaction of short
+statements that no per-statement timeout would have stopped.
 
 ## Trade-offs
 - The settle window adds latency: data in the warehouse is at least
