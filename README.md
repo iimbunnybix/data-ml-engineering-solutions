@@ -52,6 +52,7 @@ Every problem folder has the same structure:
 | 035 | [A tenth of yesterday's revenue was booked to region "Unknown", although every customer had a region in the CRM](problems/035-early-arriving-facts-unknown-region) |
 | 036 | [The risk model kept flagging customers who shop once a month, because their "7-day spend" included purchases from months ago](problems/036-row-window-feature-sparse-days) |
 | 037 | [Global checkout conversion "jumped" from 3.1% to 4.1% the week a tiny new market launched](problems/037-averaged-daily-rates-weekly-rollup) |
+| 038 | [A batch of high-risk applicants scored as "average", and the same customer's risk changed from 39% to 13% between files](problems/038-inference-batch-statistics-scaling) |
 <!-- INDEX:END -->
 
 ## Run the tests
