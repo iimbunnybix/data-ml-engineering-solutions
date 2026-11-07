@@ -51,6 +51,7 @@ Every problem folder has the same structure:
 | 034 | [The daily wire-total reconciliation alerted every morning over two cents, and each rerun of the job gave a slightly different total](problems/034-order-dependent-float-revenue-totals) |
 | 035 | [A tenth of yesterday's revenue was booked to region "Unknown", although every customer had a region in the CRM](problems/035-early-arriving-facts-unknown-region) |
 | 036 | [The risk model kept flagging customers who shop once a month, because their "7-day spend" included purchases from months ago](problems/036-row-window-feature-sparse-days) |
+| 037 | [Global checkout conversion "jumped" from 3.1% to 4.1% the week a tiny new market launched](problems/037-averaged-daily-rates-weekly-rollup) |
 <!-- INDEX:END -->
 
 ## Run the tests
