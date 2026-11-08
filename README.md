@@ -54,6 +54,7 @@ Every problem folder has the same structure:
 | 037 | [Global checkout conversion "jumped" from 3.1% to 4.1% the week a tiny new market launched](problems/037-averaged-daily-rates-weekly-rollup) |
 | 038 | [A batch of high-risk applicants scored as "average", and the same customer's risk changed from 39% to 13% between files](problems/038-inference-batch-statistics-scaling) |
 | 039 | [Revenue attributed to account managers fell by a third after billing changed its export, while the bank received the same money](problems/039-unicode-join-key-normalisation) |
+| 040 | [Yesterday's payments table was missing almost a third of transactions, and the ingestion job said "success"](problems/040-silent-parse-skips-reject-quarantine) |
 <!-- INDEX:END -->
 
 ## Run the tests
