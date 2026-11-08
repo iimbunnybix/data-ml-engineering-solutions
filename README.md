@@ -53,6 +53,7 @@ Every problem folder has the same structure:
 | 036 | [The risk model kept flagging customers who shop once a month, because their "7-day spend" included purchases from months ago](problems/036-row-window-feature-sparse-days) |
 | 037 | [Global checkout conversion "jumped" from 3.1% to 4.1% the week a tiny new market launched](problems/037-averaged-daily-rates-weekly-rollup) |
 | 038 | [A batch of high-risk applicants scored as "average", and the same customer's risk changed from 39% to 13% between files](problems/038-inference-batch-statistics-scaling) |
+| 039 | [Revenue attributed to account managers fell by a third after billing changed its export, while the bank received the same money](problems/039-unicode-join-key-normalisation) |
 <!-- INDEX:END -->
 
 ## Run the tests
