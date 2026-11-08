@@ -34,7 +34,9 @@ class TargetEncoder:
         if smoothing < 0:
             raise ValueError("smoothing must be >= 0")
         self.m = smoothing
-        self.prior = 0.0
+        # None until fit: an unfitted encoder must not quietly return 0.0
+        # ("zero risk") for every category.
+        self.prior: float | None = None
         self.table: dict[Hashable, float] = {}
 
     def fit(self, cats: Sequence[Hashable], labels: Sequence[int]) -> "TargetEncoder":
@@ -51,6 +53,9 @@ class TargetEncoder:
         return self
 
     def transform(self, cats: Sequence[Hashable]) -> list[float]:
+        """Encode categories; unseen ones get the prior. Requires fit first."""
+        if self.prior is None:
+            raise RuntimeError("TargetEncoder must be fitted before transform")
         return [self.table.get(c, self.prior) for c in cats]
 
 
