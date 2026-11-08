@@ -116,6 +116,14 @@ class LeakFreeEncoding(unittest.TestCase):
         with self.assertRaises(ValueError):
             TargetEncoder(smoothing=-1)
 
+    def test_out_of_fold_rejects_more_labels_than_categories(self):
+        with self.assertRaises(ValueError):
+            out_of_fold_encode(["a", "a", "b", "b"], [1, 0, 1, 0, 1, 1], k=2, smoothing=0)
+
+    def test_out_of_fold_rejects_fewer_labels_than_categories(self):
+        with self.assertRaises(ValueError):
+            out_of_fold_encode(["a", "a", "b", "b"], [1, 0], k=2, smoothing=0)
+
 
 if __name__ == "__main__":
     unittest.main()

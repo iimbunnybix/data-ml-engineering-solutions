@@ -65,6 +65,10 @@ def kfold_indices(n: int, k: int, seed: int) -> list[list[int]]:
 def out_of_fold_encode(cats: Sequence[Hashable], labels: Sequence[int], k: int = 5,
                        smoothing: float = 20.0, seed: int = 0) -> list[float]:
     """Encode each training row using an encoder fitted on the other k-1 folds."""
+    # Check here, not only in fit: fold subsets are built from len(cats), so
+    # extra labels would be silently ignored and rows encoded misaligned.
+    if len(cats) != len(labels) or not cats:
+        raise ValueError("cats and labels must be non-empty and the same length")
     out = [0.0] * len(cats)
     for fold in kfold_indices(len(cats), k, seed):
         held = set(fold)
