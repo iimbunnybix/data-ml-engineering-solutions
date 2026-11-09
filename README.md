@@ -56,6 +56,7 @@ Every problem folder has the same structure:
 | 039 | [Revenue attributed to account managers fell by a third after billing changed its export, while the bank received the same money](problems/039-unicode-join-key-normalisation) |
 | 040 | [Yesterday's payments table was missing almost a third of transactions, and the ingestion job said "success"](problems/040-silent-parse-skips-reject-quarantine) |
 | 041 | [After a 30-day backfill, the "weekly active users" chart was a flat line at 2,346 for all of October](problems/041-backfill-wall-clock-run-date) |
+| 042 | [The fraud review queue went from 2% to 20% of transactions the morning a retrained model went live](problems/042-model-threshold-version-mismatch) |
 <!-- INDEX:END -->
 
 ## Run the tests
