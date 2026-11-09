@@ -55,6 +55,7 @@ Every problem folder has the same structure:
 | 038 | [A batch of high-risk applicants scored as "average", and the same customer's risk changed from 39% to 13% between files](problems/038-inference-batch-statistics-scaling) |
 | 039 | [Revenue attributed to account managers fell by a third after billing changed its export, while the bank received the same money](problems/039-unicode-join-key-normalisation) |
 | 040 | [Yesterday's payments table was missing almost a third of transactions, and the ingestion job said "success"](problems/040-silent-parse-skips-reject-quarantine) |
+| 041 | [After a 30-day backfill, the "weekly active users" chart was a flat line at 2,346 for all of October](problems/041-backfill-wall-clock-run-date) |
 <!-- INDEX:END -->
 
 ## Run the tests
