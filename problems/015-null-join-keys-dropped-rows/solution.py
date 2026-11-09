@@ -10,6 +10,7 @@ buckets and refuses to publish unless input and output totals reconcile.
 """
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 # Buckets for rows that cannot be attributed to a real region. They are
@@ -55,9 +56,13 @@ def normalize_key(raw_key: object) -> str | None:
 
     Customer IDs are case-insensitive codes, so surrounding whitespace and
     letter case are not meaningful. An empty or blank string is as missing
-    as NULL and must be treated the same way.
+    as NULL and must be treated the same way. A float NaN is how pandas and
+    many file readers write a missing value; without this check ``str()``
+    would turn it into the ordinary key ``"NAN"`` that joins to itself.
     """
     if raw_key is None:
+        return None
+    if isinstance(raw_key, float) and math.isnan(raw_key):
         return None
     text = str(raw_key).strip()
     if text == "":

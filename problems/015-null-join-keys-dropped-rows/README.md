@@ -17,7 +17,7 @@ reports 13,000 (42%), and 3,000 cents of keyless orders land in "Test accounts".
 ## Root cause
 - An **inner join** on the raw key silently discards every fact row whose key
   does not match exactly, so `"C1 "` and `"c2"` vanish.
-- `""`, `"   "` and NULL are different values to the join, but all mean
+- `""`, `"   "`, NULL and NaN are different values to the join, but all mean
   "no customer", and none of them is handled on purpose.
 - Some join engines (pandas `merge`, Python dict lookups) treat NULL as equal
   to NULL, so a NULL-key dimension row matches every NULL-key fact row.
@@ -25,7 +25,10 @@ reports 13,000 (42%), and 3,000 cents of keyless orders land in "Test accounts".
 
 ## Solution
 - `normalize_key` canonicalises keys (strip, upper-case) and maps empty or
-  blank strings to `None`, so there is exactly one "missing" value.
+  blank strings and float `NaN` (how pandas writes a missing value) to
+  `None`, so there is exactly one "missing" value. Without the NaN check,
+  `str(nan)` becomes the key `"NAN"` and a NaN-keyed placeholder row would
+  again absorb every NaN-keyed order.
 - Dimension rows without a key are excluded from the lookup, so a missing
   key can never match anything. Conflicting duplicate keys raise.
 - The join is a **left join with explicit buckets**: `MISSING_KEY` for orders

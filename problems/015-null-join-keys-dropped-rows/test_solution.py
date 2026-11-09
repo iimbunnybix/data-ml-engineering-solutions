@@ -54,6 +54,9 @@ class FixNormalizeKey(unittest.TestCase):
         for raw in (None, "", "   "):
             self.assertIsNone(normalize_key(raw))
 
+    def test_float_nan_is_missing_not_the_text_nan(self):
+        self.assertIsNone(normalize_key(float("nan")))
+
 
 class FixRevenueByRegion(unittest.TestCase):
     def setUp(self):
@@ -82,6 +85,24 @@ class FixRevenueByRegion(unittest.TestCase):
         customers = make_customers() + [{"customer_id": "c1 ", "region": "East"}]
         with self.assertRaises(ValueError):
             revenue_by_region(make_orders(), customers)
+
+
+class FixNanKeys(unittest.TestCase):
+    """pandas and many file readers represent a missing key as float NaN."""
+
+    def test_nan_order_key_goes_to_missing_bucket(self):
+        orders = [{"customer_id": float("nan"), "amount_cents": 3_000}]
+        report = revenue_by_region(orders, make_customers())
+        self.assertEqual(report.revenue_cents, {MISSING_KEY_BUCKET: 3_000})
+
+    def test_nan_keyed_dimension_row_never_matches_nan_orders(self):
+        customers = make_customers() + [
+            {"customer_id": float("nan"), "region": "Test accounts"}]
+        orders = [{"customer_id": float("nan"), "amount_cents": 3_000},
+                  {"customer_id": "C1", "amount_cents": 1}]
+        report = revenue_by_region(orders, customers)
+        self.assertEqual(report.revenue_cents,
+                         {MISSING_KEY_BUCKET: 3_000, "North": 1})
 
 
 class FixReconciliation(unittest.TestCase):
