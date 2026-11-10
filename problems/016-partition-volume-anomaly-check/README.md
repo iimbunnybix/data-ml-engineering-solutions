@@ -30,7 +30,8 @@ schema or non-null check.
   only −1.7 (would pass), while the robust score is −23.1 (blocked).
 - **Both directions.** Too-high counts (a double load) are blocked too.
 - **Guards.** Empty partitions are blocked; MAD is floored at 1% of the
-  median so a perfectly flat history does not divide by zero; with fewer than
+  median (and at least 1 row, for tables whose median is 0) so a perfectly
+  flat or usually-empty history does not divide by zero; with fewer than
   4 comparable days the partition is published with an explicit warning.
 
 On the fixture, the half-day partition scores −32.2 against a median of

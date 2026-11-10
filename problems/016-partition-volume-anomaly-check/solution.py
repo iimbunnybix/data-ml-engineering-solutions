@@ -25,6 +25,10 @@ MAX_ABS_ROBUST_Z = 3.5
 # If history is perfectly flat, MAD is 0; treat spread as at least 1% of the
 # median so tiny normal changes are not flagged as infinite anomalies.
 MIN_RELATIVE_SPREAD = 0.01
+# When the median itself is 0 (a sparse table that is usually empty on this
+# weekday), the relative floor is 0 too; never let the spread drop below one
+# row, so the score stays finite.
+MIN_ABSOLUTE_SPREAD = 1.0
 
 
 @dataclass(frozen=True)
@@ -76,7 +80,7 @@ def robust_z_score(row_count: int, history: list[int]) -> tuple[float, float]:
     """
     center = median(history)
     spread = median_absolute_deviation(history)
-    spread = max(spread, MIN_RELATIVE_SPREAD * center)
+    spread = max(spread, MIN_RELATIVE_SPREAD * center, MIN_ABSOLUTE_SPREAD)
     z_score = MAD_TO_SIGMA * (row_count - center) / spread
     return z_score, center
 

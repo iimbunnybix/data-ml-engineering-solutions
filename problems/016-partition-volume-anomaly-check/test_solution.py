@@ -75,6 +75,23 @@ class FixRobustStatistics(unittest.TestCase):
         z_score, _ = robust_z_score(1_000_500, [1_000_000] * 6)
         self.assertLess(abs(z_score), 3.5)
 
+    def test_zero_median_history_does_not_crash(self):
+        history = {SUNDAY - timedelta(weeks=weeks_back): count
+                   for weeks_back, count in enumerate([0, 0, 0, 0, 3], start=1)}
+        decision = check_partition_volume(SUNDAY, 40, history)
+        self.assertIsInstance(decision.robust_z, float)
+
+    def test_rows_on_a_usually_empty_day_are_reported_as_high(self):
+        history = {SUNDAY - timedelta(weeks=weeks_back): 0 for weeks_back in range(1, 6)}
+        decision = check_partition_volume(SUNDAY, 40, history)
+        self.assertFalse(decision.publish)
+        self.assertIn("anomalously high", decision.reason)
+
+    def test_one_row_on_a_usually_empty_day_is_published(self):
+        history = {SUNDAY - timedelta(weeks=weeks_back): 0 for weeks_back in range(1, 6)}
+        decision = check_partition_volume(SUNDAY, 1, history)
+        self.assertTrue(decision.publish)
+
     def test_mad_of_known_values(self):
         self.assertEqual(median_absolute_deviation([1, 2, 3, 4, 100]), 1)
 
