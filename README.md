@@ -57,6 +57,7 @@ Every problem folder has the same structure:
 | 040 | [Yesterday's payments table was missing almost a third of transactions, and the ingestion job said "success"](problems/040-silent-parse-skips-reject-quarantine) |
 | 041 | [After a 30-day backfill, the "weekly active users" chart was a flat line at 2,346 for all of October](problems/041-backfill-wall-clock-run-date) |
 | 042 | [The fraud review queue went from 2% to 20% of transactions the morning a retrained model went live](problems/042-model-threshold-version-mismatch) |
+| 043 | [The orders warehouse had no data for October 10-31, and the loader reported "nothing new" every night](problems/043-unpadded-date-partitions-skipped) |
 <!-- INDEX:END -->
 
 ## Run the tests
