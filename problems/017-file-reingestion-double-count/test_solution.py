@@ -93,6 +93,14 @@ class FixExactlyOnceIngest(unittest.TestCase):
         counts = sorted(warehouse.manifest.values())
         self.assertEqual(counts, [1, 2, 2])
 
+    def test_file_with_utf8_byte_order_mark_loads_normally(self):
+        bom = b"\xef\xbb\xbf"
+        zone = LandingZone(files={"sales/2026-11-01.csv": bom + sales_file(100)})
+        warehouse = Warehouse()
+        outcomes = exactly_once_ingest(zone, warehouse)
+        self.assertEqual(outcomes, {"sales/2026-11-01.csv": LOADED})
+        self.assertEqual(warehouse.total_amount(), 100)
+
     def test_empty_landing_folder_is_a_no_op(self):
         warehouse = Warehouse()
         outcomes = exactly_once_ingest(LandingZone(files={}), warehouse)

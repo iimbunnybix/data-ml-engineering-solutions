@@ -79,7 +79,9 @@ class Warehouse:
 
 def parse_rows(content: bytes) -> list[dict]:
     """Parse a sales CSV (order_id, amount) into typed rows."""
-    reader = csv.DictReader(io.StringIO(content.decode("utf-8")))
+    # "utf-8-sig" drops the byte-order mark that Excel puts at the start of
+    # "CSV UTF-8" exports; plain "utf-8" would keep it inside the first header.
+    reader = csv.DictReader(io.StringIO(content.decode("utf-8-sig")))
     rows = []
     for record in reader:
         rows.append({"order_id": record["order_id"], "amount": int(record["amount"])})
