@@ -59,6 +59,7 @@ Every problem folder has the same structure:
 | 042 | [The fraud review queue went from 2% to 20% of transactions the morning a retrained model went live](problems/042-model-threshold-version-mismatch) |
 | 043 | [The orders warehouse had no data for October 10-31, and the loader reported "nothing new" every night](problems/043-unpadded-date-partitions-skipped) |
 | 044 | [Fraud on new devices from foreign IPs spiked every other week, right after each "routine" model retrain](problems/044-retrain-on-approved-only-feedback-loop) |
+| 045 | [The daily "active customers" table came out empty after someone added one blocklist row without a user id](problems/045-not-in-filter-with-null-drops-all-rows) |
 <!-- INDEX:END -->
 
 ## Run the tests
