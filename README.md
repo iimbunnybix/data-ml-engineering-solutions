@@ -61,6 +61,7 @@ Every problem folder has the same structure:
 | 044 | [Fraud on new devices from foreign IPs spiked every other week, right after each "routine" model retrain](problems/044-retrain-on-approved-only-feedback-loop) |
 | 045 | [The daily "active customers" table came out empty after someone added one blocklist row without a user id](problems/045-not-in-filter-with-null-drops-all-rows) |
 | 046 | [The "units sold per price point" report listed $0.70 twice, and neither row matched the stock count](problems/046-float-price-bucket-keys-split-groups) |
+| 047 | [The courier budget came in 15% short every week, although the cost model's accuracy looked fine](problems/047-log-target-forecast-retransformation-bias) |
 <!-- INDEX:END -->
 
 ## Run the tests
