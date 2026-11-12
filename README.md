@@ -62,6 +62,7 @@ Every problem folder has the same structure:
 | 045 | [The daily "active customers" table came out empty after someone added one blocklist row without a user id](problems/045-not-in-filter-with-null-drops-all-rows) |
 | 046 | [The "units sold per price point" report listed $0.70 twice, and neither row matched the stock count](problems/046-float-price-bucket-keys-split-groups) |
 | 047 | [The courier budget came in 15% short every week, although the cost model's accuracy looked fine](problems/047-log-target-forecast-retransformation-bias) |
+| 048 | [The product dashboard showed 26% more sessions than real visits, and sessions that looked 3.6 minutes shorter](problems/048-clock-hour-sessions-split-visits) |
 <!-- INDEX:END -->
 
 ## Run the tests
