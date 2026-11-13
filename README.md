@@ -64,6 +64,7 @@ Every problem folder has the same structure:
 | 047 | [The courier budget came in 15% short every week, although the cost model's accuracy looked fine](problems/047-log-target-forecast-retransformation-bias) |
 | 048 | [The product dashboard showed 26% more sessions than real visits, and sessions that looked 3.6 minutes shorter](problems/048-clock-hour-sessions-split-visits) |
 | 049 | [The first week of January showed 14% more orders than any other week, and the last week of December came up short](problems/049-iso-week-with-calendar-year-merges-weeks) |
+| 050 | [The demand forecast beat every baseline offline, then missed by noticeably more in production from day one](problems/050-centered-rolling-feature-leaks-future-demand) |
 <!-- INDEX:END -->
 
 ## Run the tests
