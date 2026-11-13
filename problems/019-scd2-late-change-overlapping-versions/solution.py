@@ -104,6 +104,8 @@ def versions_as_of(history: list[Version], customer_id: str, as_of: int) -> list
 def find_overlaps(history: list[Version]) -> list[tuple[Version, Version]]:
     """Pairs of versions of the same customer whose intervals overlap or are inverted.
 
+    An inverted version (ending before it starts) is reported paired with
+    itself, so it is caught even when it is a customer's last or only version.
     Run this as a data-quality check after every load.
     """
     problems = []
@@ -112,8 +114,12 @@ def find_overlaps(history: list[Version]) -> list[tuple[Version, Version]]:
         by_customer.setdefault(version.customer_id, []).append(version)
     for versions in by_customer.values():
         versions.sort(key=lambda version: (version.valid_from, version.valid_to))
+        # Check each version on its own first: the pairwise loop below never
+        # looks at the last version as "earlier", so it cannot spot inversion there.
+        for version in versions:
+            if version.valid_to < version.valid_from:
+                problems.append((version, version))
         for earlier, later in zip(versions, versions[1:]):
-            inverted = earlier.valid_to < earlier.valid_from
-            if inverted or earlier.valid_to > later.valid_from:
+            if earlier.valid_to > later.valid_from:
                 problems.append((earlier, later))
     return problems

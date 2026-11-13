@@ -90,6 +90,15 @@ class FixLateChanges(unittest.TestCase):
         [other] = versions_as_of(history, "c2", 15 * DAY)
         self.assertEqual((other.tier, other.valid_to), ("basic", END_OF_TIME))
 
+    def test_overlap_check_flags_a_single_inverted_version(self):
+        inverted = Version("c1", "gold", 20 * DAY, 10 * DAY)
+        self.assertEqual(find_overlaps([inverted]), [(inverted, inverted)])
+
+    def test_overlap_check_flags_an_inverted_last_version(self):
+        first = Version("c1", "basic", 0, 10 * DAY)
+        inverted_last = Version("c1", "gold", 20 * DAY, 15 * DAY)
+        self.assertEqual(find_overlaps([first, inverted_last]), [(inverted_last, inverted_last)])
+
     def test_unknown_customer_has_no_versions(self):
         history = load(late_upgrade_arrival_order(), apply_change)
         self.assertEqual(versions_as_of(history, "nobody", 5 * DAY), [])
