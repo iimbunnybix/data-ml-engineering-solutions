@@ -7,7 +7,8 @@ change arrived late (effective before the current row started), that produced
 overlapping versions, so point-in-time joins returned two rows and doubled
 revenue. This module inserts a change into the version whose interval
 contains its effective time, splitting that interval, so the history stays a
-gap-free, non-overlapping timeline no matter what order changes arrive in.
+gap-free, non-overlapping timeline no matter what order changes with distinct
+effective times arrive in (on an exact tie, the last change to arrive wins).
 """
 from __future__ import annotations
 

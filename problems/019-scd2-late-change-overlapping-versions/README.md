@@ -39,8 +39,11 @@ the change where it belongs instead of always at the end:
 - If it is **before all history**, a new first version ends where the old
   first version starts.
 
-The result is the same whatever order the changes arrive in, and every point
-in time maps to exactly one version. `find_overlaps` is a cheap data-quality
+For changes with **distinct** effective times the result is the same whatever
+order they arrive in, and every point in time maps to exactly one version.
+Two different changes with the *same* effective time are treated as a
+correction, so the one that arrives last wins; if a replay can reorder such
+ties, give each change a source sequence number and keep the highest. `find_overlaps` is a cheap data-quality
 check to run after every load; it flags overlapping or inverted intervals.
 
 ## Trade-offs

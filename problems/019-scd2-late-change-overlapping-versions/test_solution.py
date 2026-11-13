@@ -84,6 +84,14 @@ class FixLateChanges(unittest.TestCase):
         history = load([Change("c1", "basic", 0), Change("c1", "gold", 0)], apply_change)
         self.assertEqual(tiers(history), [("gold", 0, END_OF_TIME)])
 
+    def test_tie_on_effective_time_is_resolved_by_arrival_order(self):
+        # Documents the limit of order-independence: a tie is a correction,
+        # so the last change to arrive decides the tier.
+        basic_then_gold = load([Change("c1", "basic", 0), Change("c1", "gold", 0)], apply_change)
+        gold_then_basic = load([Change("c1", "gold", 0), Change("c1", "basic", 0)], apply_change)
+        self.assertEqual(tiers(basic_then_gold), [("gold", 0, END_OF_TIME)])
+        self.assertEqual(tiers(gold_then_basic), [("basic", 0, END_OF_TIME)])
+
     def test_other_customers_are_untouched(self):
         changes = [Change("c2", "basic", 0), *late_upgrade_arrival_order()]
         history = load(changes, apply_change)
