@@ -65,6 +65,7 @@ Every problem folder has the same structure:
 | 048 | [The product dashboard showed 26% more sessions than real visits, and sessions that looked 3.6 minutes shorter](problems/048-clock-hour-sessions-split-visits) |
 | 049 | [The first week of January showed 14% more orders than any other week, and the last week of December came up short](problems/049-iso-week-with-calendar-year-merges-weeks) |
 | 050 | [The demand forecast beat every baseline offline, then missed by noticeably more in production from day one](problems/050-centered-rolling-feature-leaks-future-demand) |
+| 051 | [Deleted customers kept showing up as active in the warehouse, and re-running the sync never removed them](problems/051-incremental-sync-misses-hard-deletes) |
 <!-- INDEX:END -->
 
 ## Run the tests
