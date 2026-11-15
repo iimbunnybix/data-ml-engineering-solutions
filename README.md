@@ -67,6 +67,7 @@ Every problem folder has the same structure:
 | 050 | [The demand forecast beat every baseline offline, then missed by noticeably more in production from day one](problems/050-centered-rolling-feature-leaks-future-demand) |
 | 051 | [Deleted customers kept showing up as active in the warehouse, and re-running the sync never removed them](problems/051-incremental-sync-misses-hard-deletes) |
 | 052 | [Northeast orders vanished from the regional dashboard and one SKU's revenue doubled overnight](problems/052-csv-type-inference-strips-leading-zeros) |
+| 053 | [Fraud model passed review with 100% offline recall, then caught only 38% of fraud in production](problems/053-oversampling-before-split-inflates-recall) |
 <!-- INDEX:END -->
 
 ## Run the tests
