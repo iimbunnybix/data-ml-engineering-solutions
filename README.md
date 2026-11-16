@@ -70,6 +70,7 @@ Every problem folder has the same structure:
 | 053 | [Fraud model passed review with 100% offline recall, then caught only 38% of fraud in production](problems/053-oversampling-before-split-inflates-recall) |
 | 054 | [Cancelled subscriptions showed as active in the warehouse, and re-running the load "fixed" different customers each time](problems/054-merge-with-duplicate-source-keys-picks-random-row) |
 | 055 | [The new checkout "won" its A/B test by 28%, then conversion dropped after it shipped to everyone](problems/055-ab-test-ramp-up-pooled-results-simpsons-paradox) |
+| 056 | [Marketing cut ad spend because "customers stay 6 months", but half of them stay longer than 9](problems/056-customer-lifetime-from-churned-only-ignores-censoring) |
 <!-- INDEX:END -->
 
 ## Run the tests
