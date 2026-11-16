@@ -69,6 +69,7 @@ Every problem folder has the same structure:
 | 052 | [Northeast orders vanished from the regional dashboard and one SKU's revenue doubled overnight](problems/052-csv-type-inference-strips-leading-zeros) |
 | 053 | [Fraud model passed review with 100% offline recall, then caught only 38% of fraud in production](problems/053-oversampling-before-split-inflates-recall) |
 | 054 | [Cancelled subscriptions showed as active in the warehouse, and re-running the load "fixed" different customers each time](problems/054-merge-with-duplicate-source-keys-picks-random-row) |
+| 055 | [The new checkout "won" its A/B test by 28%, then conversion dropped after it shipped to everyone](problems/055-ab-test-ramp-up-pooled-results-simpsons-paradox) |
 <!-- INDEX:END -->
 
 ## Run the tests
