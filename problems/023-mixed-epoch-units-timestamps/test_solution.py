@@ -88,6 +88,24 @@ class FixQuarantinesImplausibleRows(unittest.TestCase):
         self.assertEqual(len(result.events), 3)
         self.assertEqual(result.quarantined[0].raw_value, 42)
 
+    def test_missing_event_time_is_quarantined_not_a_crash(self):
+        result = parse_events(merged_feed() + [("bad", None)], NOW)
+        self.assertEqual(len(result.events), 3)
+        self.assertEqual(result.quarantined[0].reason, "event_time is not a number")
+
+    def test_non_numeric_string_is_quarantined(self):
+        result = parse_events([("bad", "yesterday")], NOW)
+        self.assertEqual(result.quarantined[0].raw_value, "yesterday")
+
+    def test_boolean_is_quarantined(self):
+        result = parse_events([("bad", True)], NOW)
+        self.assertEqual(len(result.quarantined), 1)
+
+    def test_digit_only_string_is_parsed(self):
+        parsed = parse_event_time("str", str(EVENT_SECONDS * 1_000), NOW)
+        self.assertEqual(parsed.timestamp, EVENT_TIME)
+        self.assertEqual(parsed.unit, "milliseconds")
+
 
 if __name__ == "__main__":
     unittest.main()

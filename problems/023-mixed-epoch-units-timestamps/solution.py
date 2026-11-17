@@ -37,7 +37,7 @@ class ParsedEvent:
 @dataclass(frozen=True)
 class QuarantinedEvent:
     event_id: str
-    raw_value: float
+    raw_value: object
     reason: str
 
 
@@ -67,10 +67,31 @@ def plausible_units(raw_value: float, now: datetime,
     return matches
 
 
-def parse_event_time(event_id: str, raw_value: float, now: datetime,
+def as_number(raw_value: object) -> float | None:
+    """Return raw_value as a number, or None when it is not a usable number.
+
+    Partner JSON feeds send null, booleans or stringified epochs; one such row
+    must be quarantined, not crash the whole batch with a TypeError.
+    """
+    # bool is a subclass of int, but True is never a real timestamp.
+    if isinstance(raw_value, bool):
+        return None
+    if isinstance(raw_value, (int, float)):
+        return raw_value
+    # Accept digit-only strings such as "1793784600000" (common in JSON feeds).
+    if isinstance(raw_value, str) and raw_value.strip().isdigit():
+        return int(raw_value.strip())
+    return None
+
+
+def parse_event_time(event_id: str, raw_value: object, now: datetime,
                      earliest: datetime = EARLIEST_PLAUSIBLE
                      ) -> ParsedEvent | QuarantinedEvent:
     """Parse one timestamp, or quarantine it when its unit cannot be decided."""
+    number = as_number(raw_value)
+    if number is None:
+        return QuarantinedEvent(event_id, raw_value, "event_time is not a number")
+    raw_value = number
     units = plausible_units(raw_value, now, earliest)
     if not units:
         return QuarantinedEvent(event_id, raw_value, "no unit gives a plausible date")
@@ -83,7 +104,7 @@ def parse_event_time(event_id: str, raw_value: float, now: datetime,
     return ParsedEvent(event_id, datetime.fromtimestamp(seconds, tz=timezone.utc), unit)
 
 
-def parse_events(raw_events: list[tuple[str, float]], now: datetime,
+def parse_events(raw_events: list[tuple[str, object]], now: datetime,
                  earliest: datetime = EARLIEST_PLAUSIBLE) -> ParseResult:
     """Split raw (event_id, epoch value) pairs into parsed and quarantined events."""
     result = ParseResult()
