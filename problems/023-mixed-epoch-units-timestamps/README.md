@@ -1,4 +1,4 @@
-# 023 · After merging the mobile and partner event feeds, a third of yesterday's events were dated January 1970 and the nightly job crashed on "year 57813"
+# 023 · After merging the mobile and partner event feeds, a third of yesterday's events were dated January 1970 and the nightly job crashed on "year 58812"
 
 ## Problem
 A product-analytics pipeline merges click and purchase events from three
@@ -8,7 +8,7 @@ every row. After the mobile SDK (epoch **seconds**) was merged in, its events
 showed up in a `1970-01-21` partition and the daily active users chart for
 the real day dropped. A week later a partner feed started sending epoch
 **microseconds**, and the nightly job failed outright with
-`ValueError: year 57813 is out of range`, so no dashboards refreshed at all.
+`ValueError: year 58812 is out of range`, so no dashboards refreshed at all.
 
 ## Root cause
 An epoch timestamp is just a number; nothing in the value says which unit it
@@ -16,9 +16,9 @@ uses. Dividing every value by 1,000 is correct for exactly one source:
 
 | Source | Raw value for 2026-11-04 09:30 UTC | Read as milliseconds |
 |---|---|---|
-| mobile (seconds) | 1762248600 | 1970-01-21 09:30:48.6 |
-| web (milliseconds) | 1762248600000 | 2026-11-04 09:30 (correct) |
-| partner (microseconds) | 1762248600000000 | crash: year 57813 is out of range |
+| mobile (seconds) | 1793784600 | 1970-01-21 18:16:24.6 |
+| web (milliseconds) | 1793784600000 | 2026-11-04 09:30 (correct) |
+| partner (microseconds) | 1793784600000000 | crash: year 58812 is out of range |
 
 ## Solution
 `solution.py` decides the unit per row instead of assuming one:
@@ -27,13 +27,16 @@ uses. Dividing every value by 1,000 is correct for exactly one source:
   nanoseconds) and keep the ones that give a date inside a **plausible
   window**: not before the product launched (2015-01-01) and at most one day
   ahead of the ingestion clock. The check is done in plain seconds
-  arithmetic so a value in the year 57813 is rejected instead of crashing.
+  arithmetic so a value in the year 58812 is rejected instead of crashing.
 - Units differ by a factor of 1,000 and the window covers far less than
   that, so for real data exactly one unit fits. If **no unit** fits
   (`0`, `42`, `10**30`, a device clock two days ahead) or **more than one**
   fits (only possible with a window starting in January 1970), the row goes to a
   **quarantine** list with its raw value and a reason, instead of being
   silently placed on the wrong day.
+- Values that are not numbers at all (`null`, `true`, `"yesterday"`) are
+  quarantined with the reason "event_time is not a number"; digit-only
+  strings such as `"1793784600000"` are accepted.
 - `unit_mix` counts events per detected unit, so a source that suddenly
   switches format is visible on a dashboard.
 
