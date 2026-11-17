@@ -72,6 +72,7 @@ Every problem folder has the same structure:
 | 055 | [The new checkout "won" its A/B test by 28%, then conversion dropped after it shipped to everyone](problems/055-ab-test-ramp-up-pooled-results-simpsons-paradox) |
 | 056 | [Marketing cut ad spend because "customers stay 6 months", but half of them stay longer than 9](problems/056-customer-lifetime-from-churned-only-ignores-censoring) |
 | 057 | [Daily payments revenue was overstated after a producer retry storm, although the dedup step reported "0 duplicates"](problems/057-json-key-order-fingerprint-misses-duplicates) |
+| 058 | [After switching to downsampled training data, the ad bidder started paying about 7-9x too much for every impression](problems/058-negative-downsampling-inflates-predicted-ctr) |
 <!-- INDEX:END -->
 
 ## Run the tests
