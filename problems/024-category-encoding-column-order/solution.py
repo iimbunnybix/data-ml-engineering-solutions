@@ -36,8 +36,11 @@ class Vocabulary:
 
     @classmethod
     def fit(cls, feature: str, training_values: list[str]) -> "Vocabulary":
+        # Upstream code often fills missing values with the unknown-bucket name;
+        # those rows belong in the single unknown bucket, not in a second column.
+        categories = set(training_values) - {UNKNOWN}
         # Sorting makes the column order reproducible across training runs.
-        return cls(feature, tuple(sorted(set(training_values))))
+        return cls(feature, tuple(sorted(categories)))
 
     def columns(self) -> list[str]:
         """Column names in model order; the unknown bucket is always last."""

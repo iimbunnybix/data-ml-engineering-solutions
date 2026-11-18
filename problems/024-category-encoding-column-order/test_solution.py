@@ -59,6 +59,11 @@ class FixUsesTrainingVocabulary(unittest.TestCase):
         self.assertEqual(vocabulary.unknown_share(["tv", "ios", "car", "web"]), 0.5)
         self.assertEqual(vocabulary.unknown_share([]), 0.0)
 
+    def test_training_value_equal_to_unknown_bucket_creates_no_duplicate_column(self):
+        vocabulary = Vocabulary.fit("device", ["android", UNKNOWN])
+        self.assertEqual(vocabulary.columns(), ["device=android", "device=__unknown__"])
+        self.assertEqual(vocabulary.encode(["tv", UNKNOWN]), [[0.0, 1.0], [0.0, 1.0]])
+
     def test_empty_batch_returns_no_scores(self):
         model, vocabulary = trained()
         self.assertEqual(score_batch(model, vocabulary, []), [])
