@@ -74,6 +74,7 @@ Every problem folder has the same structure:
 | 057 | [Daily payments revenue was overstated after a producer retry storm, although the dedup step reported "0 duplicates"](problems/057-json-key-order-fingerprint-misses-duplicates) |
 | 058 | [After switching to downsampled training data, the ad bidder started paying about 7-9x too much for every impression](problems/058-negative-downsampling-inflates-predicted-ctr) |
 | 059 | [A freezer full of stock thawed overnight while its temperature chart showed a flat, perfect -19 °C](problems/059-forward-fill-hides-dead-freezer-sensor) |
+| 060 | [A button-colour test "won" with a +2.4 point conversion lift, but sales did not move at all after it shipped to everyone](problems/060-shared-hash-buckets-couple-ab-experiments) |
 <!-- INDEX:END -->
 
 ## Run the tests
