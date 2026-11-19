@@ -33,7 +33,10 @@ dropped and the function returns normally.
   reordered column) is rejected before any row is read.
 - **Reconcile counts.** `load_products` compares the parsed row count with
   the row count in the vendor's manifest file and raises `RowCountMismatch`
-  if they differ, which also catches an upload that was cut short.
+  if they differ, which catches an upload that lost whole records.
+- **Require the final line break.** The vendor ends every record with a line
+  break, so a file that does not end with one was cut inside its last record
+  (which would otherwise load a truncated price) and is rejected.
 
 ## Trade-offs
 - Failing the whole import on one bad record is strict. If the vendor's data

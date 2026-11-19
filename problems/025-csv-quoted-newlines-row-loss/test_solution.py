@@ -72,6 +72,11 @@ class FixFailsLoudly(unittest.TestCase):
         with self.assertRaises(RowCountMismatch):
             load_products(truncated, manifest_row_count=4)
 
+    def test_upload_cut_inside_the_last_record_is_rejected(self):
+        cut_mid_record = vendor_export(PRODUCTS)[:-4]   # last bytes of the upload lost
+        with self.assertRaises(MalformedRecord):
+            load_products(cut_mid_record, manifest_row_count=4)
+
     def test_matching_manifest_count_loads_everything(self):
         self.assertEqual(load_products(vendor_export(PRODUCTS), manifest_row_count=4), PRODUCTS)
 

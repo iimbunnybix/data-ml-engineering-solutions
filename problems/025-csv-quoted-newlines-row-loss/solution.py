@@ -65,10 +65,23 @@ def record_to_product(record: list[str], record_number: int) -> Product:
     return Product(sku, name, description, int(price))
 
 
+def check_complete_file(text: str) -> None:
+    """Reject a non-empty file whose last record has no line terminator.
+
+    The vendor ends every record with a line break. A file cut short inside
+    its last record still parses to the right number of columns (the price
+    is just truncated, e.g. "199" -> "1"), so the row count alone cannot
+    catch it.
+    """
+    if text and not text.endswith("\n"):
+        raise MalformedRecord("file does not end with a line break: upload was cut short")
+
+
 def parse_products(text: str) -> list[Product]:
     """Parse the export with real CSV rules (quotes, embedded commas/newlines)."""
     # newline="" is what the csv module expects: it handles line endings
     # itself, which is what lets a quoted field contain a line break.
+    check_complete_file(text)
     reader = csv.reader(io.StringIO(text, newline=""))
     header = next(reader, None)
     if header is None:
