@@ -77,6 +77,7 @@ Every problem folder has the same structure:
 | 060 | [A button-colour test "won" with a +2.4 point conversion lift, but sales did not move at all after it shipped to everyone](problems/060-shared-hash-buckets-couple-ab-experiments) |
 | 061 | [Q1 revenue came in ₹65,000 short for one region because its last two days of March were reported as April](problems/061-excel-serial-dates-shift-quarter-end-orders) |
 | 062 | [Help-centre search returned the "Terms of Service" page as the top answer to almost every question](problems/062-unnormalized-embeddings-one-long-doc-tops-every-search) |
+| 063 | [A fraud model that flags nothing passed validation and was promoted, because the validation set contained no fraud](problems/063-random-split-leaves-no-positives-in-validation) |
 <!-- INDEX:END -->
 
 ## Run the tests
