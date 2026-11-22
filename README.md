@@ -79,6 +79,7 @@ Every problem folder has the same structure:
 | 062 | [Help-centre search returned the "Terms of Service" page as the top answer to almost every question](problems/062-unnormalized-embeddings-one-long-doc-tops-every-search) |
 | 063 | [A fraud model that flags nothing passed validation and was promoted, because the validation set contained no fraud](problems/063-random-split-leaves-no-positives-in-validation) |
 | 064 | [The nightly fraud-scoring job crashed with KeyError: 'bnpl' the day "buy now, pay later" launched, and the hotfix scored it as Apple Pay](problems/064-unseen-category-at-serving-crashes-batch-scoring) |
+| 065 | [The toxicity model got softer after a relabelling project because every annotator disagreement became the senior annotator's "ok"](problems/065-majority-vote-ties-go-to-first-annotator-bias-labels) |
 <!-- INDEX:END -->
 
 ## Run the tests
