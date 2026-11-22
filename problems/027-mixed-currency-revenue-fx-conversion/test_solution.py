@@ -99,6 +99,12 @@ class FixFailLoudly(unittest.TestCase):
     def test_rate_exactly_seven_days_old_is_accepted(self):
         self.assertEqual(rate_table().rate_on("INR", date(2026, 10, 22)), Decimal("0.0118"))
 
+    def test_two_rates_for_the_same_date_raise(self):
+        # A duplicated or corrected row must not be resolved by picking the larger rate.
+        duplicated = {"EUR": [(date(2026, 10, 15), Decimal("1.08")), (date(2026, 10, 15), Decimal("1.07"))]}
+        with self.assertRaises(ValueError):
+            FxRateTable(duplicated)
+
     def test_float_amount_is_rejected(self):
         with self.assertRaises(TypeError):
             Order("o6", date(2026, 10, 2), 0.1, "USD")

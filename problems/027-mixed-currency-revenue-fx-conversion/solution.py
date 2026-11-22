@@ -75,6 +75,17 @@ def naive_total_with_todays_rate(orders: list[Order], todays_rates: dict[str, De
 
 
 # --- the fix ----------------------------------------------------------------
+def reject_duplicate_dates(currency: str, ordered: list[tuple[date, Decimal]]) -> None:
+    """Raise if two rates share a date: we cannot tell which one is correct.
+
+    Sorting (date, rate) tuples would silently prefer the larger rate, so a
+    duplicated or republished row must stop the pipeline instead.
+    """
+    for index in range(1, len(ordered)):
+        if ordered[index][0] == ordered[index - 1][0]:
+            raise ValueError(f"{currency} has two rates for {ordered[index][0]}")
+
+
 class FxRateTable:
     """Historical rates: units of REPORTING_CURRENCY per 1 unit of a currency."""
 
@@ -84,6 +95,7 @@ class FxRateTable:
         for currency, published in rates.items():
             # Sort by effective date so we can binary-search on lookup.
             ordered = sorted(published)
+            reject_duplicate_dates(currency, ordered)
             self._dates[currency] = [effective for effective, _ in ordered]
             self._rates[currency] = [rate for _, rate in ordered]
 
