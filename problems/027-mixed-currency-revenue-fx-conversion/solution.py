@@ -48,6 +48,9 @@ class Order:
         # Floats cannot represent most cent values exactly; reject them early.
         if not isinstance(self.amount, Decimal):
             raise TypeError(f"{self.order_id}: amount must be Decimal, got {type(self.amount).__name__}")
+        # Decimal("NaN") or Infinity (e.g. a "NaN" export cell) would turn the whole total into NaN.
+        if not self.amount.is_finite():
+            raise ValueError(f"{self.order_id}: amount must be a finite number, got {self.amount}")
 
 
 # --- the original bugs ------------------------------------------------------

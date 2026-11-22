@@ -105,6 +105,14 @@ class FixFailLoudly(unittest.TestCase):
         with self.assertRaises(ValueError):
             FxRateTable(duplicated)
 
+    def test_nan_amount_is_rejected(self):
+        with self.assertRaises(ValueError):
+            Order("o7", date(2026, 10, 2), Decimal("NaN"), "USD")
+
+    def test_infinite_amount_is_rejected(self):
+        with self.assertRaises(ValueError):
+            Order("o8", date(2026, 10, 2), Decimal("Infinity"), "USD")
+
     def test_float_amount_is_rejected(self):
         with self.assertRaises(TypeError):
             Order("o6", date(2026, 10, 2), 0.1, "USD")
