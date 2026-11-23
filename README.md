@@ -82,6 +82,7 @@ Every problem folder has the same structure:
 | 065 | [The toxicity model got softer after a relabelling project because every annotator disagreement became the senior annotator's "ok"](problems/065-majority-vote-ties-go-to-first-annotator-bias-labels) |
 | 066 | [The delivery-pricing report showed 10,064 trips in its distance bands for a day with 10,000 deliveries](problems/066-inclusive-band-edges-double-count-boundary-deliveries) |
 | 067 | [The "large sizes need a fit check" rule sent every order, size S included, to manual review](problems/067-ordinal-sizes-encoded-alphabetically) |
+| 068 | [Sessions per user jumped 26% after the offline-mode release, and some sessions had negative length](problems/068-sessionizing-in-arrival-order-splits-sessions) |
 <!-- INDEX:END -->
 
 ## Run the tests
