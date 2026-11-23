@@ -1,3 +1,4 @@
+import math
 import random
 import unittest
 
@@ -94,6 +95,18 @@ class FixSrmCheck(unittest.TestCase):
             if result.p_value < 0.05:
                 alarms += 1
         self.assertAlmostEqual(alarms / experiments, 0.05, delta=0.015)
+
+
+class FixZeroConversionControl(unittest.TestCase):
+    def test_zero_conversion_control_is_read_without_crashing(self):
+        readout = read_results(VariantStats("control", 1000, 0), VariantStats("treatment", 1000, 3))
+        self.assertEqual(readout.winner, "treatment")
+        self.assertEqual(readout.lift, math.inf)
+
+    def test_no_conversions_anywhere_reports_zero_lift(self):
+        readout = read_results(VariantStats("control", 1000, 0), VariantStats("treatment", 1000, 0))
+        self.assertEqual(readout.lift, 0.0)
+        self.assertFalse(readout.significant)
 
 
 class FixStatistics(unittest.TestCase):

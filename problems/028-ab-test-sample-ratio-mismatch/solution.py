@@ -95,11 +95,23 @@ def two_proportion_p_value(control: VariantStats, treatment: VariantStats) -> fl
     return math.erfc(abs(z_score) / math.sqrt(2))
 
 
+def relative_lift(control: VariantStats, treatment: VariantStats) -> float:
+    """Treatment rate relative to control (0.05 means +5%).
+
+    A control with zero conversions (early hours, rare events) has no baseline
+    to divide by, so report infinite lift when treatment converted at all and
+    zero when neither did, instead of crashing the readout job.
+    """
+    if control.conversion_rate == 0:
+        return math.inf if treatment.conversion_rate > 0 else 0.0
+    return treatment.conversion_rate / control.conversion_rate - 1
+
+
 # --- the original readout and the guarded one --------------------------------
 def naive_read_results(control: VariantStats, treatment: VariantStats) -> ExperimentReadout:
     """Original dashboard: compares conversion rates without checking the split."""
     p_value = two_proportion_p_value(control, treatment)
-    lift = treatment.conversion_rate / control.conversion_rate - 1
+    lift = relative_lift(control, treatment)
     winner = treatment.name if lift > 0 else control.name
     return ExperimentReadout(winner, lift, p_value, p_value < SIGNIFICANCE_LEVEL)
 
