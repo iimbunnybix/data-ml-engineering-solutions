@@ -84,6 +84,7 @@ Every problem folder has the same structure:
 | 067 | [The "large sizes need a fit check" rule sent every order, size S included, to manual review](problems/067-ordinal-sizes-encoded-alphabetically) |
 | 068 | [Sessions per user jumped 26% after the offline-mode release, and some sessions had negative length](problems/068-sessionizing-in-arrival-order-splits-sessions) |
 | 069 | [Fraud model rated first-time buyers as long-standing customers, and "days since last purchase" was sometimes negative](problems/069-lag-features-bleed-across-customers) |
+| 070 | ["Sales down 50% vs last year" paged merchandising every Monday, while the business was flat](problems/070-year-over-year-by-calendar-date-compares-different-weekdays) |
 <!-- INDEX:END -->
 
 ## Run the tests
