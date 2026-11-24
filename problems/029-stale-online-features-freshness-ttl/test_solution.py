@@ -1,6 +1,6 @@
 import unittest
 
-from solution import (ACTIVE_COURIERS, ETA_FEATURES, PENDING_ORDERS, SECONDS_PER_MINUTE, FeatureStore,
+from solution import (ACTIVE_COURIERS, ETA_FEATURES, MAX_CLOCK_SKEW_SECONDS, PENDING_ORDERS, SECONDS_PER_MINUTE, FeatureStore,
                       FreshnessPolicy, StalenessMetrics, naive_read_features, predict_eta_minutes,
                       read_fresh_features)
 
@@ -91,6 +91,18 @@ class FixFreshnessPolicy(unittest.TestCase):
         self.read_at(1000.0)
         self.read_at(1000.0 + MAX_AGE_SECONDS + 1)
         self.assertEqual(self.metrics.stale_rate(PENDING_ORDERS), 0.5)
+
+    def test_value_slightly_in_the_future_within_clock_skew_is_fresh(self):
+        served = self.read_at(1000.0 - MAX_CLOCK_SKEW_SECONDS)
+        self.assertEqual(served, {PENDING_ORDERS: 33.0, ACTIVE_COURIERS: 11.0})
+
+    def test_value_written_in_milliseconds_is_stale_and_uses_fallback(self):
+        store = FeatureStore()
+        store.write(ZONE, PENDING_ORDERS, 20.0, written_at=1_700_000_000_000)
+        store.write(ZONE, ACTIVE_COURIERS, 20.0, written_at=1_700_000_000_000)
+        served = read_fresh_features(store, ZONE, POLICIES, 1_700_000_000 + 16 * 3600, self.metrics)
+        self.assertEqual(served, {PENDING_ORDERS: 45.0, ACTIVE_COURIERS: 20.0})
+        self.assertEqual(self.metrics.stale_rate(PENDING_ORDERS), 1.0)
 
     def test_no_reads_means_no_alert(self):
         self.assertEqual(StalenessMetrics().alerting_features(), [])

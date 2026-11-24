@@ -22,6 +22,9 @@ ETA_FEATURES = (PENDING_ORDERS, ACTIVE_COURIERS)
 BASE_ETA_MINUTES = 15.0
 MINUTES_PER_ORDER_PER_COURIER = 10.0
 STALE_RATE_ALERT_THRESHOLD = 0.05
+# Writer clocks may run slightly ahead of the reader's; more than this means a bug
+# (for example the pipeline writing epoch milliseconds instead of seconds).
+MAX_CLOCK_SKEW_SECONDS = 30.0
 
 
 @dataclass(frozen=True)
@@ -96,6 +99,10 @@ def is_fresh(stored: FeatureValue | None, policy: FreshnessPolicy, now: float) -
     if stored is None:
         return False
     age = now - stored.written_at
+    # WHY: a write time far in the future would give a negative age and look
+    # fresh forever, silently disabling the check; treat it as not fresh.
+    if age < -MAX_CLOCK_SKEW_SECONDS:
+        return False
     return age <= policy.max_age_seconds
 
 
