@@ -85,6 +85,7 @@ Every problem folder has the same structure:
 | 068 | [Sessions per user jumped 26% after the offline-mode release, and some sessions had negative length](problems/068-sessionizing-in-arrival-order-splits-sessions) |
 | 069 | [Fraud model rated first-time buyers as long-standing customers, and "days since last purchase" was sometimes negative](problems/069-lag-features-bleed-across-customers) |
 | 070 | ["Sales down 50% vs last year" paged merchandising every Monday, while the business was flat](problems/070-year-over-year-by-calendar-date-compares-different-weekdays) |
+| 071 | [Finance saw 37% of order revenue vanish the week the US checkout went live, with no errors anywhere](problems/071-event-ids-reused-across-sources-dedup-drops-real-orders) |
 <!-- INDEX:END -->
 
 ## Run the tests
