@@ -32,6 +32,11 @@ class LinearModel:
     weights: tuple[float, ...]
 
     def predict(self, features: tuple[float, ...]) -> int:
+        # zip() would silently drop the extra weights or features, so a model
+        # built for a different feature schema would still get a test score.
+        if len(self.weights) != len(features):
+            raise ValueError(
+                f"model has {len(self.weights)} weights but example has {len(features)} features")
         score = 0.0
         for weight, value in zip(self.weights, features):
             score += weight * value

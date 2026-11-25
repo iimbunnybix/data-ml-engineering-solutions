@@ -105,6 +105,14 @@ class Helpers(unittest.TestCase):
         with self.assertRaises(ValueError):
             best_candidate([], EXAMPLES)
 
+    def test_model_with_too_few_weights_is_rejected(self):
+        with self.assertRaises(ValueError):
+            LinearModel((1.0,)).predict((-1.0, 5.0, 5.0))
+
+    def test_model_with_too_many_weights_is_rejected(self):
+        with self.assertRaises(ValueError):
+            LinearModel((1.0, 1.0, 1.0)).predict((1.0,))
+
 
 if __name__ == "__main__":
     unittest.main()
