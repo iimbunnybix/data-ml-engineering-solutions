@@ -87,6 +87,7 @@ Every problem folder has the same structure:
 | 070 | ["Sales down 50% vs last year" paged merchandising every Monday, while the business was flat](problems/070-year-over-year-by-calendar-date-compares-different-weekdays) |
 | 071 | [Finance saw 37% of order revenue vanish the week the US checkout went live, with no errors anywhere](problems/071-event-ids-reused-across-sources-dedup-drops-real-orders) |
 | 072 | [A stuck fridge sensor sent 85 °C readings for hours and the "remove outliers" step kept every one of them](problems/072-z-score-outlier-filter-masked-by-the-outliers) |
+| 073 | [A retrained fraud model passed the 99% accuracy gate and then flagged no fraud at all for a week](problems/073-accuracy-gate-ships-fraud-model-that-flags-nothing) |
 <!-- INDEX:END -->
 
 ## Run the tests
