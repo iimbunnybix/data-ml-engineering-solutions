@@ -89,6 +89,7 @@ Every problem folder has the same structure:
 | 072 | [A stuck fridge sensor sent 85 °C readings for hours and the "remove outliers" step kept every one of them](problems/072-z-score-outlier-filter-masked-by-the-outliers) |
 | 073 | [A retrained fraud model passed the 99% accuracy gate and then flagged no fraud at all for a week](problems/073-accuracy-gate-ships-fraud-model-that-flags-nothing) |
 | 074 | [The ticket classifier scored 77% offline but routed most new tickets to the wrong team](problems/074-near-duplicate-tickets-leak-across-train-test-split) |
+| 075 | [The churn model's backtest error was 20% lower than anything it achieved in production after a competitor launch](problems/075-walk-forward-split-without-embargo-leaks-label-window) |
 <!-- INDEX:END -->
 
 ## Run the tests
