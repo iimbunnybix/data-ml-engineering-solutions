@@ -92,6 +92,7 @@ Every problem folder has the same structure:
 | 075 | [The churn model's backtest error was 20% lower than anything it achieved in production after a competitor launch](problems/075-walk-forward-split-without-embargo-leaks-label-window) |
 | 076 | [The new CTR feature got zero importance in the ad-ranking model, and the top ad slot was no better than random](problems/076-integer-division-ctr-feature-always-zero) |
 | 077 | [Fraud model's precision fell for two months while the drift dashboard stayed green every day](problems/077-day-over-day-drift-check-misses-slow-drift) |
+| 078 | [After the new mobile SDK shipped, half of the app's page views showed up as "unknown user" in every dashboard](problems/078-json-flattening-key-collision-overwrites-user-id) |
 <!-- INDEX:END -->
 
 ## Run the tests
