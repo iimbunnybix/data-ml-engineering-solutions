@@ -91,6 +91,7 @@ Every problem folder has the same structure:
 | 074 | [The ticket classifier scored 77% offline but routed most new tickets to the wrong team](problems/074-near-duplicate-tickets-leak-across-train-test-split) |
 | 075 | [The churn model's backtest error was 20% lower than anything it achieved in production after a competitor launch](problems/075-walk-forward-split-without-embargo-leaks-label-window) |
 | 076 | [The new CTR feature got zero importance in the ad-ranking model, and the top ad slot was no better than random](problems/076-integer-division-ctr-feature-always-zero) |
+| 077 | [Fraud model's precision fell for two months while the drift dashboard stayed green every day](problems/077-day-over-day-drift-check-misses-slow-drift) |
 <!-- INDEX:END -->
 
 ## Run the tests
